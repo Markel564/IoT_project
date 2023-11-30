@@ -1,25 +1,29 @@
 from kaggle.api.kaggle_api_extended import KaggleApi
 import shutil
-# Ruta al archivo JSON de tu token API de Kaggle dentro del proyecto
+import os
+
+
+# route to kaggle.json
 kaggle_json_path = "./docs/kaggle.json"
 
-# Directorio predeterminado donde Kaggle busca el archivo kaggle.json
-default_kaggle_dir = "/home/markel/.kaggle"
+# default kaggle.json path
+user_home_dir = os.path.expanduser("~")
+default_kaggle_dir = os.path.join(user_home_dir, ".kaggle")
 
-# Copia el archivo kaggle.json al directorio predeterminado
+# copy kaggle.json to default kaggle.json path
 shutil.copy(kaggle_json_path, default_kaggle_dir)
 
-# Configuración de la API de Kaggle
+# configure kaggle api
 api = KaggleApi()
 api.authenticate()
 
-# Nombre del conjunto de datos en Kaggle
+# name of the dataset
 dataset_name = "nelgiriyewithana/global-weather-repository"
 
-# Directorio de destino para el conjunto de datos descargado
+# output directory
 output_dir = "./docs/data/"
 
-# Descargar el conjunto de datos
+# download the dataset
 api.dataset_download_files(dataset_name, path=output_dir, unzip=True)
 
 print("Downloaded the dataset to " + output_dir + " successfully!")
