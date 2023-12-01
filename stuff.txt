@@ -6,6 +6,7 @@ This will allow us to obtain the dataset in real time
 
 For using the kaggle API, I used 
 
+pip install kaggle
 mkdir ~/.kaggle
 cp kaggle.json ~/.kaggle/
 chmod 600 ~/.kaggle/kaggle.json
