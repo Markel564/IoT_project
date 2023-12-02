@@ -1,5 +1,9 @@
 # This file will adjust a dataset following the data analysis done previously.
 # It will receive a dataframe and a location and will return a dataframe with the adjusted data.
+
+# To eliminate warnings
+import warnings
+warnings.filterwarnings('ignore')
 import pandas as pd
 
 def adjust_dataset(df, location):
@@ -21,8 +25,8 @@ def adjust_dataset(df, location):
     # 3. Columns that are not useful for the prediction
     # columns that are highly correlated with other columns
     highly_correlated_cols = ['temperature_fahrenheit', 'wind_mph', 'pressure_in', 'precip_in', 'gust_mph', 'feels_like_fahrenheit', 'visibility_miles', 'air_quality_us-epa-index']
-    # columns that are constant
-    constant_cols = ['country', 'timezone', 'latitude', 'longitude', 'last_updated_epoch']
+    # columns that are constant or useless
+    constant_cols = ['country', 'timezone', 'latitude', 'longitude', 'last_updated_epoch', 'condition_text']
     df.drop(columns=highly_correlated_cols, inplace=True)
     df.drop(columns=constant_cols, inplace=True)
     # we will also take the location out of the dataset since we already used it and it is constant
@@ -33,8 +37,7 @@ def adjust_dataset(df, location):
     # 4. Apply one hot encoding for categorical columns (but not to dates)
     categorical_variables = df.select_dtypes(include=['object']).columns
     categorical_variables = categorical_variables.drop(['sunrise', 'sunset', 'moonrise', 'moonset'])
-    # we will also drop condition_text since it is a target variable
-    categorical_variables = categorical_variables.drop(['condition_text'])
+
     df = pd.get_dummies(df, columns=categorical_variables)
     
 
@@ -43,13 +46,21 @@ def adjust_dataset(df, location):
     df['moonset'].replace('No moonset', method='ffill', inplace=True)
     df['moonrise'].replace('No moonrise', method='ffill', inplace=True)
 
-    # 6. Change format of objetc columns to datetime
-    df['sunrise'] = pd.to_datetime(df['sunrise'])
-    df['sunset'] = pd.to_datetime(df['sunset'])
-    df['moonrise'] = pd.to_datetime(df['moonrise'])
-    df['moonset'] = pd.to_datetime(df['moonset'])
+    # 6. Change format of objetc columns to timestamp
+    df['sunrise'] = pd.to_datetime(df['sunrise']).apply(lambda x: x.timestamp())
+    df['sunset'] = pd.to_datetime(df['sunset']).apply(lambda x: x.timestamp())
+    df['moonrise'] = pd.to_datetime(df['moonrise']).apply(lambda x: x.timestamp())
+    df['moonset'] = pd.to_datetime(df['moonset']).apply(lambda x: x.timestamp())
 
-    #  the end result is a dataframe with 47 columns
+
+    # 7. Change all boolean columns to 0 and 1 (not sure if this is necessary)
+    
+    boolean_columns = df.select_dtypes(include=['bool']).columns
+    
+        
+    for column in boolean_columns:
+        df[column] = df[column].astype(int)
+
 
     
     return df
@@ -59,4 +70,5 @@ def adjust_dataset(df, location):
 # df = adjust_dataset(df, 'Madrid')
 
 # # lets see the unique values of Moonries 
-# print(df['moonrise'].unique())
+# print(df.head(5))
+# print (df.dtypes)
