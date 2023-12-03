@@ -1,5 +1,6 @@
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import LabelEncoder
 
 def split_data(df, target_variable, train_size):
 
@@ -10,7 +11,8 @@ def split_data(df, target_variable, train_size):
 
     if target_variable not in target_variables:
         raise ValueError(f"Target variable must be one of {target_variables}")
-    
+
+
     X_train = train_df.drop(columns=target_variable) # we drop the target variable from the training set
     y_train = train_df[target_variable] # we keep only the target variable in the training set
 

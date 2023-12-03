@@ -25,8 +25,8 @@ def adjust_dataset(df, location):
     # 3. Columns that are not useful for the prediction
     # columns that are highly correlated with other columns
     highly_correlated_cols = ['temperature_fahrenheit', 'wind_mph', 'pressure_in', 'precip_in', 'gust_mph', 'feels_like_fahrenheit', 'visibility_miles', 'air_quality_us-epa-index']
-    # columns that are constant or useless
-    constant_cols = ['country', 'timezone', 'latitude', 'longitude', 'last_updated_epoch', 'condition_text']
+    # columns that are constant or useless.
+    constant_cols = ['country', 'timezone', 'latitude', 'longitude', 'last_updated_epoch']
     df.drop(columns=highly_correlated_cols, inplace=True)
     df.drop(columns=constant_cols, inplace=True)
     # we will also take the location out of the dataset since we already used it and it is constant
@@ -37,7 +37,6 @@ def adjust_dataset(df, location):
     # 4. Apply one hot encoding for categorical columns (but not to dates)
     categorical_variables = df.select_dtypes(include=['object']).columns
     categorical_variables = categorical_variables.drop(['sunrise', 'sunset', 'moonrise', 'moonset'])
-
     df = pd.get_dummies(df, columns=categorical_variables)
     
 
