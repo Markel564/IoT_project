@@ -4,9 +4,10 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
-
+from sklearn.model_selection import GridSearchCV, TimeSeriesSplit
 from tensorflow import keras
 from keras.layers import Dropout
+
 
 tf.get_logger().setLevel('ERROR')
 class Ann:
@@ -39,14 +40,14 @@ class Ann:
         keras.layers.Dense(self.output_size, activation='linear')
         ])
 
-        optimizer = keras.optimizers.Adam(learning_rate=0.001)
+        optimizer = keras.optimizers.RMSprop(learning_rate=0.001)
         # Compilation of model
         self.model.compile(optimizer=optimizer,
                     loss='mean_squared_error',
                     metrics=['mean_squared_error'])
 
         # Train the model
-        self.model.fit(self.X_train_seq, self.y_train_seq, epochs=100, batch_size=32)
+        self.model.fit(self.X_train_seq, self.y_train_seq, epochs=50, batch_size=32)
         
 
 
@@ -73,4 +74,59 @@ class Ann:
         predictions = self.model.predict(self.X_test_seq[-1].reshape(1, self.window_size))
         return predictions[0]
 
+    def custom_scorer(self, estimator, X, y):
+        y_pred = estimator.predict(X)
+        mse = np.mean((y - y_pred)**2)
+        return -mse  # negative MSE because GridSearchCV looks for maximum score
 
+        
+    def perform_hyperparameter_tuning(self):
+        # Define the grid search parameters
+        param_grid = {
+            'batch_size': [32, 64, 128],
+            'epochs': [50, 100, 150],
+            'optimizer': ['adam', 'sgd', 'rmsprop']
+        }
+
+        # Create TimeSeriesSplit cross-validator
+        tscv = TimeSeriesSplit(n_splits=3)
+
+        best_score = float('-inf')
+        best_params = None
+
+        # Perform grid search
+        for batch_size in param_grid['batch_size']:
+            for epochs in param_grid['epochs']:
+                for optimizer in param_grid['optimizer']:
+                    model = Sequential([
+                        Dense(64, input_shape=(self.window_size,), activation='relu'),
+                        Dropout(0.2),
+                        Dense(32, activation='relu'),
+                        Dense(16, activation='relu'),
+                        Dense(self.output_size, activation='linear')
+                    ])
+
+                    model.compile(optimizer=optimizer, loss='mean_squared_error', metrics=['mean_squared_error'])
+
+                    # Track average score across time series splits
+                    avg_score = 0.0
+
+                    for train_index, val_index in tscv.split(self.X_train_seq):
+                        X_train, X_val = self.X_train_seq[train_index], self.X_train_seq[val_index]
+                        y_train, y_val = self.y_train_seq[train_index], self.y_train_seq[val_index]
+
+                        model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, verbose=0)
+
+                        val_score = self.custom_scorer(model, X_val, y_val)
+                        avg_score += val_score
+
+                    avg_score /= tscv.n_splits
+
+                    if avg_score > best_score:
+                        best_score = avg_score
+                        best_params = {'batch_size': batch_size, 'epochs': epochs, 'optimizer': optimizer}
+
+        print("Best: %f using %s" % (best_score, best_params))
+        return best_params
+
+   
