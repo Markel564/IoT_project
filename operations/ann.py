@@ -8,6 +8,7 @@ from tensorflow.keras.layers import Dense
 from tensorflow import keras
 from keras.layers import Dropout
 
+tf.get_logger().setLevel('ERROR')
 class Ann:
 
     def __init__(self, y_test, y_train, window_size, output_size, target_variable):
@@ -45,7 +46,7 @@ class Ann:
                     metrics=['mean_squared_error'])
 
         # Train the model
-        self.model.fit(self.X_train_seq, self.y_train_seq, epochs=100)
+        self.model.fit(self.X_train_seq, self.y_train_seq, epochs=100, batch_size=32)
         
 
 
