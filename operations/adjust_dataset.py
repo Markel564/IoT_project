@@ -5,8 +5,10 @@
 import warnings
 warnings.filterwarnings('ignore')
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
 
-def adjust_dataset(df, location):
+
+def adjust_dataset(df, location, target_variable):
     
     """
     df: dataframe to be adjusted
@@ -51,7 +53,12 @@ def adjust_dataset(df, location):
     df['moonrise'] = pd.to_datetime(df['moonrise']).apply(lambda x: x.timestamp())
     df['moonset'] = pd.to_datetime(df['moonset']).apply(lambda x: x.timestamp())
 
+    scaler = StandardScaler()
+    numerical_columns = df.select_dtypes(include=['int', 'float']).columns
+    numerical_columns.drop(target_variable)
 
+    scaler.fit(df[numerical_columns])
+    df[numerical_columns] = scaler.transform(df[numerical_columns])
     # 7. Change all boolean columns to 0 and 1 (not sure if this is necessary)
     
     boolean_columns = df.select_dtypes(include=['bool']).columns
@@ -62,12 +69,7 @@ def adjust_dataset(df, location):
 
 
     
+
+    
     return df
 
-
-# df = pd.read_csv('./docs/data/GlobalWeatherRepository.csv')
-# df = adjust_dataset(df, 'Madrid')
-
-# # lets see the unique values of Moonries 
-# print(df.head(5))
-# print (df.dtypes)

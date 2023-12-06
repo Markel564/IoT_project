@@ -1,6 +1,6 @@
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import LabelEncoder
+
 
 def split_data(df, target_variable, train_size):
 
