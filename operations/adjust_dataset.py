@@ -6,9 +6,9 @@ import warnings
 warnings.filterwarnings('ignore')
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
+from scipy.stats import zscore
 
-
-def adjust_dataset(df, location, target_variable):
+def adjust_dataset(df,target_variable):
     
     """
     df: dataframe to be adjusted
@@ -17,11 +17,10 @@ def adjust_dataset(df, location, target_variable):
     return: adjusted dataframe
     """
 
-    # 1. Keep only those rows that belong to the location selected by the user
-    df = df[df['location_name'] == location].copy()
+    # 1. Order by location_name
+    df.sort_values(by=['location_name', 'last_updated'], inplace=True)
 
-    # 2. Order by last_updated and eliminate it
-    df.sort_values(by=['last_updated'], inplace=True)
+    # 2. Order by last_updated and eliminate it since we dont need them
     df.drop(columns=['last_updated'], inplace=True)
 
     # 3. Columns that are not useful for the prediction
@@ -31,45 +30,49 @@ def adjust_dataset(df, location, target_variable):
     constant_cols = ['country', 'timezone', 'latitude', 'longitude', 'last_updated_epoch']
     df.drop(columns=highly_correlated_cols, inplace=True)
     df.drop(columns=constant_cols, inplace=True)
-    # we will also take the location out of the dataset since we already used it and it is constant
-    df.drop(columns=['location_name'], inplace=True)
 
 
 
+    df.drop(columns=['condition_text'], inplace=True)
     # 4. Apply one hot encoding for categorical columns (but not to dates)
     categorical_variables = df.select_dtypes(include=['object']).columns
-    categorical_variables = categorical_variables.drop(['sunrise', 'sunset', 'moonrise', 'moonset'])
+    categorical_variables = categorical_variables.drop(['sunrise', 'sunset', 'moonrise', 'moonset', 'location_name'])
     df = pd.get_dummies(df, columns=categorical_variables)
     
 
     # 5. There are instantes with moonset and moonrise where there are missing values, because there is none. We 
-    # will fill those values with with the last value of the column
-    df['moonset'].replace('No moonset', method='ffill', inplace=True)
-    df['moonrise'].replace('No moonrise', method='ffill', inplace=True)
+    # will delete those rows
+    df['moonset'] = df['moonset'].replace('No moonset', pd.NaT).fillna(method='ffill')
+    df['moonrise'] = df['moonrise'].replace('No moonrise', pd.NaT).fillna(method='ffill')
+    # now we drop these rows
+    df.dropna(inplace=True)
 
+    # 6 Change format of object columns to timestamp
+    df['sunrise'] = pd.to_datetime(df['sunrise']).apply(lambda x: x.timestamp() if not pd.isna(x) else x)
+    df['sunset'] = pd.to_datetime(df['sunset']).apply(lambda x: x.timestamp() if not pd.isna(x) else x)
+    df['moonrise'] = pd.to_datetime(df['moonrise']).apply(lambda x: x.timestamp() if not pd.isna(x) else x)
+    df['moonset'] = pd.to_datetime(df['moonset']).apply(lambda x: x.timestamp() if not pd.isna(x) else x)
 
-    # 6. Change format of objetc columns to timestamp
-    df['sunrise'] = pd.to_datetime(df['sunrise']).apply(lambda x: x.timestamp())
-    df['sunset'] = pd.to_datetime(df['sunset']).apply(lambda x: x.timestamp())
-    df['moonrise'] = pd.to_datetime(df['moonrise']).apply(lambda x: x.timestamp())
-    df['moonset'] = pd.to_datetime(df['moonset']).apply(lambda x: x.timestamp())
 
     scaler = StandardScaler()
     numerical_columns = df.select_dtypes(include=['int', 'float']).columns
     numerical_columns = numerical_columns.drop(target_variable)
-
+    # lets print columns that are not numerical
     scaler.fit(df[numerical_columns])
     df[numerical_columns] = scaler.transform(df[numerical_columns])
     
     # 7. Change all boolean columns to 0 and 1 (not sure if this is necessary)
     
     boolean_columns = df.select_dtypes(include=['bool']).columns
-    
         
     for column in boolean_columns:
         df[column] = df[column].astype(int)
 
-
+    # 8. Eliminate outliers
+    z_scores = zscore(df[numerical_columns])
+    abs_z_scores = abs(z_scores)
+    outliers = (abs_z_scores > 3).all(axis=1)
+    df_no_outliers = df[~outliers]
 
     
     return df

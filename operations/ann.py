@@ -21,26 +21,35 @@ class Ann(nn.Module):
         
         self.x_conversion(0.7)
         self.y_conversion(0.7)
+
         self.shuffle_data()
         self.build_model()
 
     def x_conversion(self, train_size):
         sequences = []
-        for i in range(len(self.df) - self.window_size - self.output_size):
-            seq = self.df.drop(self.target_variable, axis=1).iloc[i : i + self.window_size]
-            sequences.append(seq.values)
 
+        for city in self.df['location_name'].unique():
+            city_data = self.df[self.df['location_name'] == city]
+
+            for i in range(len(city_data) - self.window_size - self.output_size):
+                seq = city_data.iloc[i: i + self.window_size].drop([self.target_variable, 'location_name'], axis=1)
+                sequences.append(seq.values)
+        print ("Cantidad de windows: ", len(sequences))        
         self.X_train = torch.tensor(sequences[:int(len(sequences) * train_size)], dtype=torch.float32)
         self.X_test = torch.tensor(sequences[int(len(sequences) * train_size):], dtype=torch.float32)
 
     def y_conversion(self, train_size):
         labels = []
-        for i in range(self.window_size, len(self.df) - self.output_size):
-            label = self.df[self.target_variable].iloc[i : i + self.output_size]
-            labels.append(label.values)
+        for city in self.df['location_name'].unique():
+            city_data = self.df[self.df['location_name'] == city]
 
+            for i in range(self.window_size, len(city_data) - self.output_size):
+                label = city_data.iloc[i: i + self.output_size][self.target_variable]
+                labels.append(label.values)
+        print ("Cantidad de labels: ", len(labels))
         self.y_train = torch.tensor(labels[:int(len(labels) * train_size)], dtype=torch.float32)
         self.y_test = torch.tensor(labels[int(len(labels) * train_size):], dtype=torch.float32)
+
 
         
     def shuffle_data(self):
@@ -54,12 +63,12 @@ class Ann(nn.Module):
         #  lets build a model with these parameters
         self.model = nn.Sequential(
             nn.Linear(self.window_size * self.X_train.size(2), 32),
-            nn.ReLU(),
+            nn.LeakyReLU(0.2),
             nn.Dropout(0.2),
             nn.Linear(32, 32),
-            nn.ReLU(),
+            nn.LeakyReLU(0.2),
             nn.Linear(32, 32),
-            nn.ReLU(),
+            nn.LeakyReLU(0.2),
             nn.Flatten(),
             nn.Linear(32, self.output_size)
         )
@@ -67,22 +76,8 @@ class Ann(nn.Module):
         self.optimizer = optim.RMSprop(self.model.parameters(), lr=0.01)
         self.criterion = nn.MSELoss()
         
-        # self.model = nn.Sequential(
-        #     nn.Linear(self.window_size * self.X_train.size(2), 64),
-        #     nn.ReLU(),
-        #     nn.Dropout(0.2),
-        #     nn.Linear(64, 32),
-        #     nn.ReLU(),
-        #     nn.Linear(32, 16),
-        #     nn.ReLU(),
-        #     nn.Flatten(),
-        #     nn.Linear(16, self.output_size)
-        # )
-
-        # self.optimizer = optim.RMSprop(self.model.parameters(), lr=0.001)
-        # self.criterion = nn.MSELoss()
     
-    def train_model(self, epochs=100, batch_size=32):
+    def train_model(self, epochs=50, batch_size=32):
         dataset = TensorDataset(self.X_train.view(-1, self.window_size * self.X_train.size(2)), self.y_train)
         dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
@@ -143,3 +138,32 @@ class Ann(nn.Module):
         # we return the results with the lowest evaluation result
         
         return min(results, key=lambda x: x['evaluation_result'])
+
+    def compute_feature_importance(self):
+
+        self.eval()
+        self.X_test.requires_grad = True
+        dataset = TensorDataset(self.X_test.view(-1, self.window_size * self.X_test.size(2)), self.y_test)
+        dataloader = DataLoader(dataset, batch_size=1, shuffle=True)
+
+        # Compute the loss without any feature
+        loss_without_feature = 0
+        for X_batch, y_batch in dataloader:
+            self.optimizer.zero_grad()
+            predictions = self(X_batch)
+            loss_without_feature += self.criterion(predictions, y_batch)
+        loss_without_feature = loss_without_feature / len(dataloader)
+
+        # Compute the loss with each feature
+        feature_importance = []
+        for feature_idx, feature_name in enumerate(self.df.drop(self.target_variable, axis=1).columns):
+            loss_with_feature = 0
+            for X_batch, y_batch in dataloader:
+                self.optimizer.zero_grad()
+                predictions = self(X_batch)
+                loss_with_feature += self.criterion(predictions, y_batch)
+            loss_with_feature = loss_with_feature / len(dataloader)
+            importance_value = (loss_without_feature - loss_with_feature) / loss_without_feature
+            feature_importance.append((feature_name, importance_value.item()))
+
+        return feature_importance
