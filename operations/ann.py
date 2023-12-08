@@ -4,9 +4,9 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
 from torch.utils.data import DataLoader, TensorDataset
 from sklearn.model_selection import ParameterGrid
+import matplotlib.pyplot as plt
 
 torch.manual_seed(42)
 
@@ -19,6 +19,7 @@ class Ann(nn.Module):
         self.output_size = 3
         self.target_variable = target_variable
         
+
         self.x_conversion(0.7)
         self.y_conversion(0.7)
 
@@ -31,10 +32,9 @@ class Ann(nn.Module):
         for city in self.df['location_name'].unique():
             city_data = self.df[self.df['location_name'] == city]
 
-            for i in range(len(city_data) - self.window_size - self.output_size):
+            for i in range(len(city_data) - self.window_size - self.output_size + 1):
                 seq = city_data.iloc[i: i + self.window_size].drop([self.target_variable, 'location_name'], axis=1)
-                sequences.append(seq.values)
-        print ("Cantidad de windows: ", len(sequences))        
+                sequences.append(seq.values)     
         self.X_train = torch.tensor(sequences[:int(len(sequences) * train_size)], dtype=torch.float32)
         self.X_test = torch.tensor(sequences[int(len(sequences) * train_size):], dtype=torch.float32)
 
@@ -43,10 +43,9 @@ class Ann(nn.Module):
         for city in self.df['location_name'].unique():
             city_data = self.df[self.df['location_name'] == city]
 
-            for i in range(self.window_size, len(city_data) - self.output_size):
+            for i in range(self.window_size, len(city_data) - self.output_size + 1):
                 label = city_data.iloc[i: i + self.output_size][self.target_variable]
                 labels.append(label.values)
-        print ("Cantidad de labels: ", len(labels))
         self.y_train = torch.tensor(labels[:int(len(labels) * train_size)], dtype=torch.float32)
         self.y_test = torch.tensor(labels[int(len(labels) * train_size):], dtype=torch.float32)
 
@@ -58,28 +57,25 @@ class Ann(nn.Module):
         self.y_train = self.y_train[indices]
 
     def build_model(self):
-        # {'params': {'batch_size': 32, 'dropout': 0.2, 'lr': 0.01, 'lr_schedule': 'exponential_decay', 
-        # 'neurons_per_layer': 32, 'num_layers': 2, 'optimizer': 'RMSprop'}, 'num_epochs': 100,
-        #  lets build a model with these parameters
         self.model = nn.Sequential(
             nn.Linear(self.window_size * self.X_train.size(2), 32),
             nn.LeakyReLU(0.2),
             nn.Dropout(0.2),
             nn.Linear(32, 32),
             nn.LeakyReLU(0.2),
-            nn.Linear(32, 32),
-            nn.LeakyReLU(0.2),
             nn.Flatten(),
             nn.Linear(32, self.output_size)
         )
 
-        self.optimizer = optim.RMSprop(self.model.parameters(), lr=0.01)
+        self.optimizer = optim.SGD(self.model.parameters(), lr=0.001)
         self.criterion = nn.MSELoss()
         
     
-    def train_model(self, epochs=50, batch_size=32):
+    def train_model(self, epochs=50, batch_size=32,  max_grad_norm=2.0):
         dataset = TensorDataset(self.X_train.view(-1, self.window_size * self.X_train.size(2)), self.y_train)
         dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+
+        train_losses = []
 
         for epoch in range(epochs):
             for X_batch, y_batch in dataloader:
@@ -87,11 +83,16 @@ class Ann(nn.Module):
                 predictions = self(X_batch)
                 loss = self.criterion(predictions, y_batch)
                 loss.backward()
+                torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=max_grad_norm)
                 self.optimizer.step()
+
+                train_losses.append(loss.item())
 
     def evaluate(self):
         with torch.no_grad():
             predictions = self(self.X_test.view(-1, self.window_size * self.X_test.size(2)))
+
+
             test_loss = self.criterion(predictions, self.y_test)
             rmse = torch.sqrt(test_loss)
 
@@ -104,6 +105,7 @@ class Ann(nn.Module):
         X = torch.tensor(X, dtype=torch.float32).reshape(1, -1, self.window_size * self.X_train.size(2))
         with torch.no_grad():
             predictions = self(X)
+       
 
         return predictions[0].numpy()
 

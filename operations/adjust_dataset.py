@@ -57,7 +57,6 @@ def adjust_dataset(df,target_variable):
     scaler = StandardScaler()
     numerical_columns = df.select_dtypes(include=['int', 'float']).columns
     numerical_columns = numerical_columns.drop(target_variable)
-    # lets print columns that are not numerical
     scaler.fit(df[numerical_columns])
     df[numerical_columns] = scaler.transform(df[numerical_columns])
     
@@ -74,6 +73,9 @@ def adjust_dataset(df,target_variable):
     outliers = (abs_z_scores > 3).all(axis=1)
     df_no_outliers = df[~outliers]
 
+
+        
     
-    return df
+    
+    return df_no_outliers
 
