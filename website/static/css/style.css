@@ -1,0 +1,7 @@
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    background: linear-gradient(to bottom, #5D026F, #efc3c3);
+    /* Puedes ajustar los colores y direcciones de los gradientes según tus preferencias */
+  }

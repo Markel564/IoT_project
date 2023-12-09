@@ -21,7 +21,7 @@ api.authenticate()
 dataset_name = "nelgiriyewithana/global-weather-repository"
 
 # output directory
-output_dir = "./docs/data/"
+output_dir = "../docs/data/"
 
 # download the dataset
 api.dataset_download_files(dataset_name, path=output_dir, unzip=True)
