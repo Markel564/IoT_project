@@ -1,0 +1,24 @@
+2023-12-09 14:20:25
+evaluation for temperature_celsius --> 3.136589939594269
+evaluation for wind_kph --> 7.790393924713134
+evaluation for humidity --> 16.72563440322876
+evaluation for pressure_mb --> 78.81898475646973
+evaluation for precip_mm --> 0.7877709484100341
+evaluation for cloud --> 31.795371265411376
+
+2023-12-09 14:27:54
+evaluation for temperature_celsius --> 3.1197677779197694
+evaluation for wind_kph --> 7.755852885246277
+evaluation for humidity --> 16.303758163452148
+evaluation for pressure_mb --> 77.11242599487305
+evaluation for precip_mm --> 0.7763508021831512
+evaluation for cloud --> 32.03753038406372
+
+2023-12-09 14:28:15
+evaluation for temperature_celsius --> 3.1197677779197694
+evaluation for wind_kph --> 7.755852885246277
+evaluation for humidity --> 16.303758163452148
+evaluation for pressure_mb --> 77.11242599487305
+evaluation for precip_mm --> 0.7763508021831512
+evaluation for cloud --> 32.03753038406372
+

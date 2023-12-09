@@ -34,7 +34,10 @@ class Ann(nn.Module):
 
             for i in range(len(city_data) - self.window_size - self.output_size + 1):
                 seq = city_data.iloc[i: i + self.window_size].drop([self.target_variable, 'location_name'], axis=1)
-                sequences.append(seq.values)     
+
+                sequences.append(seq.values)  
+
+  
         self.X_train = torch.tensor(sequences[:int(len(sequences) * train_size)], dtype=torch.float32)
         self.X_test = torch.tensor(sequences[int(len(sequences) * train_size):], dtype=torch.float32)
 
@@ -57,22 +60,24 @@ class Ann(nn.Module):
         self.y_train = self.y_train[indices]
 
     def build_model(self):
+        # print (self.X_train.size(2), self.X_train.shape)
         self.model = nn.Sequential(
             nn.Linear(self.window_size * self.X_train.size(2), 32),
             nn.LeakyReLU(0.2),
             nn.Dropout(0.2),
             nn.Linear(32, 32),
             nn.LeakyReLU(0.2),
-            nn.Flatten(),
+            # nn.Flatten(),
             nn.Linear(32, self.output_size)
         )
 
-        self.optimizer = optim.SGD(self.model.parameters(), lr=0.001)
+        self.optimizer = optim.Adam(self.model.parameters(), lr=0.001)
         self.criterion = nn.MSELoss()
         
     
     def train_model(self, epochs=50, batch_size=32,  max_grad_norm=2.0):
         dataset = TensorDataset(self.X_train.view(-1, self.window_size * self.X_train.size(2)), self.y_train)
+        # print (self.X_train.view(-1, self.window_size * self.X_train.size(2))[1])
         dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
         train_losses = []
@@ -83,10 +88,15 @@ class Ann(nn.Module):
                 predictions = self(X_batch)
                 loss = self.criterion(predictions, y_batch)
                 loss.backward()
+                # if self.target_variable == 'pressure_mb':
+                #     torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=max_grad_norm)
                 torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=max_grad_norm)
+
                 self.optimizer.step()
 
                 train_losses.append(loss.item())
+
+
 
     def evaluate(self):
         with torch.no_grad():

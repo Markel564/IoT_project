@@ -47,7 +47,7 @@ def adjust_dataset(df,target_variable):
     # now we drop these rows
     df.dropna(inplace=True)
 
-    # 6 Change format of object columns to timestamp
+    # # 6 Change format of object columns to timestamp
     df['sunrise'] = pd.to_datetime(df['sunrise']).apply(lambda x: x.timestamp() if not pd.isna(x) else x)
     df['sunset'] = pd.to_datetime(df['sunset']).apply(lambda x: x.timestamp() if not pd.isna(x) else x)
     df['moonrise'] = pd.to_datetime(df['moonrise']).apply(lambda x: x.timestamp() if not pd.isna(x) else x)
@@ -57,9 +57,11 @@ def adjust_dataset(df,target_variable):
     scaler = StandardScaler()
     numerical_columns = df.select_dtypes(include=['int', 'float']).columns
     numerical_columns = numerical_columns.drop(target_variable)
+    # numerical_columns = numerical_columns.drop(['sunrise', 'sunset', 'moonrise', 'moonset'])
     scaler.fit(df[numerical_columns])
     df[numerical_columns] = scaler.transform(df[numerical_columns])
     
+
     # 7. Change all boolean columns to 0 and 1 (not sure if this is necessary)
     
     boolean_columns = df.select_dtypes(include=['bool']).columns
