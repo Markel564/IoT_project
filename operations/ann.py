@@ -1,132 +1,244 @@
+"""
+-- This file contains the implementation of the ANN model --
 
+A detail description of each function is provided in the docstring of each function.
+"""
 import pandas as pd
 import numpy as np
-import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-from sklearn.model_selection import GridSearchCV, TimeSeriesSplit
-from tensorflow import keras
-from keras.layers import Dropout
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from sklearn.model_selection import train_test_split
+from torch.utils.data import DataLoader, TensorDataset
+from sklearn.model_selection import ParameterGrid
+import matplotlib.pyplot as plt
 
+torch.manual_seed(42)
 
-tf.get_logger().setLevel('ERROR')
-class Ann:
+class Ann(nn.Module):
+    def __init__(self, df, target_variable):
+        super(Ann, self).__init__()
+        """
+        Constructor of the ANN class
+        """
 
-    def __init__(self, y_test, y_train, window_size, output_size, target_variable):
-
-        self.y_test = y_test
-        self.y_train = y_train
-        self.window_size = window_size
-        self.output_size = output_size
+        self.df = df # receives a full dataframe standarized and adjusted
+        self.window_size = 7 # 7 days predict 3 days
+        self.output_size = 3
         self.target_variable = target_variable
+        
 
+        self.x_conversion(0.7)  # 70% of the data is used for training
+        self.y_conversion(0.7)
+
+        self.shuffle_data() # shuffle the data (windows, so order is maintained)
         self.build_model()
-    
+
+    def x_conversion(self, train_size):
+        """
+        input: train_size (float)
+        output: None
+
+        This function converts the input dataframe into a tensor of shape (num_samples, window_size, num_features)
+        """
+        sequences = []
+
+        for city in self.df['location_name'].unique():
+            city_data = self.df[self.df['location_name'] == city]
+
+            for i in range(len(city_data) - self.window_size - self.output_size + 1):
+                seq = city_data.iloc[i: i + self.window_size].drop([self.target_variable, 'location_name'], axis=1)
+
+                sequences.append(seq.values)  
+
+  
+        self.X_train = torch.tensor(sequences[:int(len(sequences) * train_size)], dtype=torch.float32)
+        self.X_test = torch.tensor(sequences[int(len(sequences) * train_size):], dtype=torch.float32)
+
+    def y_conversion(self, train_size):
+        """
+        input: train_size (float)
+        output: None
+
+        This function converts the input dataframe into a tensor of shape (num_samples, window_size, num_features)
+        """
+        labels = []
+        for city in self.df['location_name'].unique():
+            city_data = self.df[self.df['location_name'] == city]
+
+            for i in range(self.window_size, len(city_data) - self.output_size + 1):
+                label = city_data.iloc[i: i + self.output_size][self.target_variable]
+                labels.append(label.values)
+        self.y_train = torch.tensor(labels[:int(len(labels) * train_size)], dtype=torch.float32)
+        self.y_test = torch.tensor(labels[int(len(labels) * train_size):], dtype=torch.float32)
+
+
+        
+    def shuffle_data(self):
+        """
+        input: None
+        output: None
+
+        This function shuffles the data for a better prediction
+        """
+        indices = torch.randperm(len(self.X_train))
+        self.X_train = self.X_train[indices]
+        self.y_train = self.y_train[indices]
+
     def build_model(self):
+        """
+        input: None
+        output: None
+
+        This function builds the model of the ANN, defining the layers and the optimizer
+        """
+        self.model = nn.Sequential(
+            nn.Linear(self.window_size * self.X_train.size(2), 32),
+            nn.LeakyReLU(0.2),
+            nn.Dropout(0.2),
+            nn.Linear(32, 32),
+            nn.LeakyReLU(0.2),
+            nn.Linear(32, self.output_size)
+        )
+
+        self.optimizer = optim.Adam(self.model.parameters(), lr=0.001)
+        self.criterion = nn.MSELoss()
         
-        # Create sequences and labels for training data
-        self.X_train_seq, self.y_train_seq = self.create_sequences_and_labels(self.y_train)
+    
+    def train_model(self, epochs=50, batch_size=32,  max_grad_norm=2.0):
+        """
+        input: epochs (int), batch_size (int), max_grad_norm (float)
+        output: None
 
-        # Create sequences and labels for test data
-        self.X_test_seq, self.y_test_seq = self.create_sequences_and_labels(self.y_test)
+        This function trains the model with the specified hyperparameters
+        """
+        dataset = TensorDataset(self.X_train.view(-1, self.window_size * self.X_train.size(2)), self.y_train)
+        dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
-        
+        train_losses = []
 
-        self.model = keras.Sequential([
-        keras.layers.Dense(64, input_shape=(self.window_size,), activation='relu'),
-        Dropout(0.2),   # Dropout layer to prevent overfitting, getting rid of 20% of the neurons
-        keras.layers.Dense(32, activation='relu'),
-        keras.layers.Dense(16, activation='relu'),
-        keras.layers.Dense(self.output_size, activation='linear')
-        ])
+        for epoch in range(epochs):
+            for X_batch, y_batch in dataloader:
+                self.optimizer.zero_grad()
+                predictions = self(X_batch)
+                loss = self.criterion(predictions, y_batch)
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=max_grad_norm)
 
-        optimizer = keras.optimizers.RMSprop(learning_rate=0.001)
-        # Compilation of model
-        self.model.compile(optimizer=optimizer,
-                    loss='mean_squared_error',
-                    metrics=['mean_squared_error'])
+                self.optimizer.step()
 
-        # Train the model
-        self.model.fit(self.X_train_seq, self.y_train_seq, epochs=50, batch_size=32)
-        
+                train_losses.append(loss.item())
 
 
-    def create_sequences_and_labels(self, df):
-        sequences, labels = [], []
-        for i in range(len(df) - self.window_size - self.output_size + 1):
-            seq = df[i:i + self.window_size]
-            label = df[i + self.window_size:i +self.window_size + self.output_size]
-            sequences.append(seq)
-            labels.append(label)
-
-        return np.array(sequences), np.array(labels)
 
     def evaluate(self):
+        """
+        input: None
+        output: rmse (float)
 
-        test_loss, test_mse = self.model.evaluate(self.X_test_seq, self.y_test_seq, verbose=2)
+        This function evaluates the model with the test data
+        """
+        with torch.no_grad():
+            predictions = self(self.X_test.view(-1, self.window_size * self.X_test.size(2)))
 
-        rmse = np.sqrt(test_mse)
-        return(np.round(rmse, 2))
+
+            test_loss = self.criterion(predictions, self.y_test)
+            rmse = torch.sqrt(test_loss)
+
+        return rmse.item()
+
+    
+    
+    def predict(self, df):
+        """
+        input: df (dataframe) of 7 days of the same city
+        output: predictions (array) of 3 days, in the format array([day1, day2, day3])
+
+        This function predicts the next 3 days of the input dataframe
+        """
+        X = df.drop(self.target_variable, axis=1).iloc[-self.window_size:].values
+        X = torch.tensor(X, dtype=torch.float32).reshape(1, -1, self.window_size * self.X_train.size(2))
+        with torch.no_grad():
+            predictions = self(X)
+       
+
+        return predictions[0].numpy()
 
 
-    def predict(self):
+    def forward(self, x):
+        """
+        input: x (tensor)
+        output: self.model(x)
 
-        predictions = self.model.predict(self.X_test_seq[-1].reshape(1, self.window_size))
-        return predictions[0]
+        This function returns the model with the input tensor
+        """
+        return self.model(x)
 
-    def custom_scorer(self, estimator, X, y):
-        y_pred = estimator.predict(X)
-        mse = np.mean((y - y_pred)**2)
-        return -mse  # negative MSE because GridSearchCV looks for maximum score
 
+    def hyperparameter_tuning(self, param_grid, num_epochs_list=[10, 20]):
+        """
+        input: param_grid (dictionary), num_epochs_list (list)
+        output: results (dictionary)
+
+        This function performs a grid search over the specified hyperparameters and returns the best combination
+        """
+
+        # Generate all possible combinations of hyperparameters
+        param_combinations = list(ParameterGrid(param_grid))
+
+        results = []
+
+        # Iterate over each combination of hyperparameters
+        for params in param_combinations:
+            for num_epochs in num_epochs_list:
+
+
+                # Create a new instance of your model with the specified hyperparameters
+                ann_model = Ann(self.df, self.target_variable)
+
+                # Train the model
+                ann_model.train_model(epochs=num_epochs, batch_size=params['batch_size'])  # Pass batch_size separately
+
+                # Evaluate the model
+                evaluation_result = ann_model.evaluate()
+
+                results.append({'params': params, 'num_epochs': num_epochs, 'evaluation_result': evaluation_result})
         
-    def perform_hyperparameter_tuning(self):
-        # Define the grid search parameters
-        param_grid = {
-            'batch_size': [32, 64, 128],
-            'epochs': [50, 100, 150],
-            'optimizer': ['adam', 'sgd', 'rmsprop']
-        }
+        # we return the results with the lowest evaluation result
+        
+        return min(results, key=lambda x: x['evaluation_result'])
 
-        # Create TimeSeriesSplit cross-validator
-        tscv = TimeSeriesSplit(n_splits=3)
+    def compute_feature_importance(self):
+        """
+        input: None
+        output: feature_importance (list)
 
-        best_score = float('-inf')
-        best_params = None
+        This function computes the feature importance of each feature
+        """
 
-        # Perform grid search
-        for batch_size in param_grid['batch_size']:
-            for epochs in param_grid['epochs']:
-                for optimizer in param_grid['optimizer']:
-                    model = Sequential([
-                        Dense(64, input_shape=(self.window_size,), activation='relu'),
-                        Dropout(0.2),
-                        Dense(32, activation='relu'),
-                        Dense(16, activation='relu'),
-                        Dense(self.output_size, activation='linear')
-                    ])
+        self.eval()
+        self.X_test.requires_grad = True
+        dataset = TensorDataset(self.X_test.view(-1, self.window_size * self.X_test.size(2)), self.y_test)
+        dataloader = DataLoader(dataset, batch_size=1, shuffle=True)
 
-                    model.compile(optimizer=optimizer, loss='mean_squared_error', metrics=['mean_squared_error'])
+        # Compute the loss without any feature
+        loss_without_feature = 0
+        for X_batch, y_batch in dataloader:
+            self.optimizer.zero_grad()
+            predictions = self(X_batch)
+            loss_without_feature += self.criterion(predictions, y_batch)
+        loss_without_feature = loss_without_feature / len(dataloader)
 
-                    # Track average score across time series splits
-                    avg_score = 0.0
+        # Compute the loss with each feature
+        feature_importance = []
+        for feature_idx, feature_name in enumerate(self.df.drop(self.target_variable, axis=1).columns):
+            loss_with_feature = 0
+            for X_batch, y_batch in dataloader:
+                self.optimizer.zero_grad()
+                predictions = self(X_batch)
+                loss_with_feature += self.criterion(predictions, y_batch)
+            loss_with_feature = loss_with_feature / len(dataloader)
+            importance_value = (loss_without_feature - loss_with_feature) / loss_without_feature
+            feature_importance.append((feature_name, importance_value.item()))
 
-                    for train_index, val_index in tscv.split(self.X_train_seq):
-                        X_train, X_val = self.X_train_seq[train_index], self.X_train_seq[val_index]
-                        y_train, y_val = self.y_train_seq[train_index], self.y_train_seq[val_index]
-
-                        model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, verbose=0)
-
-                        val_score = self.custom_scorer(model, X_val, y_val)
-                        avg_score += val_score
-
-                    avg_score /= tscv.n_splits
-
-                    if avg_score > best_score:
-                        best_score = avg_score
-                        best_params = {'batch_size': batch_size, 'epochs': epochs, 'optimizer': optimizer}
-
-        print("Best: %f using %s" % (best_score, best_params))
-        return best_params
-
-   
+        return feature_importance

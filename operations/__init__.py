@@ -4,5 +4,4 @@
 from .adjust_dataset import adjust_dataset
 from .split_data import split_data
 from .ann import Ann
-#from .linearregression import LinearRegressionModel
-from .lin import LinearRegressionModel
+from .lstm import LSTMPredictorWrapper
