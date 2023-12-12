@@ -3,5 +3,47 @@ body {
     padding: 0;
     height: 100vh;
     background: linear-gradient(to bottom, #5D026F, #efc3c3);
-    /* Puedes ajustar los colores y direcciones de los gradientes según tus preferencias */
+    display: flex;
+    flex-direction: column;
   }
+
+
+.footer {
+    margin-top: auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.footer-line {
+    border-top: 5px solid #FFFFFF; 
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.footer-contents {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo-container {
+  margin-left: auto; 
+}
+
+.footer-logo {
+  max-width: 200px; 
+  height: auto;
+}
+.names {
+  text-align: left;
+}
+
+.names h5 {
+  color: white; 
+  font-size: 14px; 
+  font-family: 'Montserrat', sans-serif;
+}
+
+.separator {
+  margin: 0 30px; /* Ajusta el margen según tus preferencias para separar los elementos */
+}
