@@ -61,6 +61,7 @@ class LSTMPredictorWrapper:
         self.X_train = torch.tensor(sequences[:int(len(sequences) * train_size)], dtype=torch.float32)
         self.X_test = torch.tensor(sequences[int(len(sequences) * train_size):], dtype=torch.float32)
 
+
     def y_conversion(self, train_size):
         """
         input: train_size (float)

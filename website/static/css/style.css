@@ -7,7 +7,38 @@ body {
     flex-direction: column;
   }
 
+.website-title{
+  margin-top: 20px;
+}
+.website-title h1{
+    font-family: 'Poppins', sans-serif;
+    font-size: 50px;
+    color: white;
+    text-align: center;
 
+}
+
+.algorithms {
+  margin-top: 10vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center; 
+}
+
+
+
+.machine-learning {
+  color: white; 
+  font-size: 15px; 
+  font-family: 'Montserrat', sans-serif;
+}
+
+.algorithms h3 {
+  color: white; 
+  font-size: 20px; 
+  font-family: 'Montserrat', sans-serif;
+}
 .footer {
     margin-top: auto;
     padding: 20px;
@@ -46,4 +77,32 @@ body {
 
 .separator {
   margin: 0 30px; /* Ajusta el margen según tus preferencias para separar los elementos */
+}
+
+
+
+
+/* Style for the checkbox container */
+.form-check {
+  margin-bottom: 10px; /* Add margin for spacing between checkboxes */
+}
+
+/* Style for the checkbox input */
+.form-check-input {
+  width: 20px; /* Adjust the width of the checkbox */
+  height: 20px; /* Adjust the height of the checkbox */
+  margin-top: 2px; /* Adjust the vertical alignment of the checkbox */
+  background-color: #fff; /* Set the background color to white for unchecked checkboxes */
+  border: 1px solid #28a745; /* Add a border for better visibility */
+  border-radius: 3px; /* Optional: Add border-radius for rounded corners */
+}
+
+/* Style for the checked checkbox input */
+.form-check-input:checked {
+  background-color: green; /* Set the background color to green for checked checkboxes */
+}
+
+/* Style for the checkbox label */
+.form-check-label {
+  margin-left: 5px; /* Add some spacing between the checkbox and the label */
 }
