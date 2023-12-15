@@ -55,6 +55,14 @@ class Ann(nn.Module):
         self.X_train = torch.tensor(sequences[:int(len(sequences) * train_size)], dtype=torch.float32)
         self.X_test = torch.tensor(sequences[int(len(sequences) * train_size):], dtype=torch.float32)
 
+    
+    def save_model(self, filepath): 
+        """
+        Johannes testing saving remove if necessary
+        Saves the model's state dictionary to the specified filepath.
+        """
+        torch.save(self.state_dict(), filepath)    
+
     def y_conversion(self, train_size):
         """
         input: train_size (float)
