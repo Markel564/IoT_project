@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Add some basic styling */
+    .custom-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      z-index: 1;
+      min-width: 160px;
+    }
+
+    .dropdown-content a {
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+
+    .custom-dropdown:hover .dropdown-content {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="custom-dropdown">
+    <button class="dropdown-toggle" id="selectedOption" onclick="toggleDropdown()">Select Option</button>
+    <div class="dropdown-content" id="dropdownOptions">
+      <a href="#" onclick="selectOption('Option 1')">Option 1</a>
+      <a href="#" onclick="selectOption('Option 2')">Option 2</a>
+      <a href="#" onclick="selectOption('Option 3')">Option 3</a>
+    </div>
+  </div>
+
+  <script>
+    function toggleDropdown() {
+      document.getElementById("dropdownOptions").classList.toggle("show");
+    }
+
+    function selectOption(option) {
+      document.getElementById("selectedOption").innerHTML = option;
+      document.getElementById("dropdownOptions").classList.remove("show");
+    }
+
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function(event) {
+      if (!event.target.matches('.dropdown-toggle')) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+          var openDropdown = dropdowns[i];
+          if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+          }
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>
