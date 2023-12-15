@@ -1,27 +1,73 @@
 {% extends 'base.html' %}
 
+{%block title%}Home{%endblock%}
+
 {% block content %}
 
 <div class="algorithms">
-    <h3>Choose Algorithm</h3>
+    <h3>Choose Algorithm:</h3>
     <div class="machine-learning">
         <div class="form-check">
             <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>
             <label class="form-check-label" for="exampleRadios1">
-              ML1
+              ANN
             </label>
           </div>
         <div class="form-check">
             <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
             <label class="form-check-label" for="exampleRadios2">
-              ML2
+              LSTM
             </label>
         </div>
     </div>
-
 </div>
+
+
+<div class="dropdown">
+  <h4>City</h4>
+  <button class="btn btn-secondary custom-button dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown()">
+    <h5 id="selectedOption">Select City</h5>
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="dropdownOptions">
+    <a class="dropdown-item" href="#" onclick="selectOption('Paris')">Paris</a>
+    <a class="dropdown-item" href="#" onclick="selectOption('Madrid')">Madrid</a>
+    <a class="dropdown-item" href="#" onclick="selectOption('Stockholm')">Stockholm</a>
+    <a class="dropdown-item" href="#" onclick="selectOption('Tokyo')">Tokyo</a>
+  </div>
+</div>
+
+<form method="POST">
+    <button type="submit" class="btn go-button btn-success" id="go-button">GO!</button>
+</form>
+
+
+
+<script>
+  function toggleDropdown() {
+    document.getElementById("dropdownOptions").classList.toggle("show");
+  }
+
+  function selectOption(option) {
+    document.getElementById("selectedOption").innerHTML = option;
+    document.getElementById("dropdownOptions").classList.remove("show");
+  }
+
+  // Close the dropdown if the user clicks outside of it
+  window.onclick = function(event) {
+    if (!event.target.matches('.dropdown-toggle')) {
+      var dropdowns = document.getElementsByClassName("dropdown-menu");
+      var i;
+      for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+      }
+    }
+  }
+</script>
+
 
 
 
 {% endblock %}
-
