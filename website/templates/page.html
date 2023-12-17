@@ -2,3 +2,11 @@
 
 {%block title%}Page{%endblock%}
 
+{% block content %}
+
+<h1>{{city}}</h1>
+<form method="POST" action="/page" id="cityForm">
+    <button type="submit" class="btn go-button btn-success" id="back-button" name="button">BACK</button>
+</form>
+
+{% endblock %}
