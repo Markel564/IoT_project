@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
-
+from .python_code.city import get_city_and_country
+from .python_code.time import get_date, get_hour
 views = Blueprint('views', __name__)
 
 
@@ -16,8 +17,6 @@ def home():
             flash('Please select a city', category = 'error')
             return redirect(url_for('views.home'))
         
-        print ("selected city is", selected_city)
-        print ("selected algo is", selectedAlgorithm)
         return redirect(url_for('views.page', city = selected_city, algorithm = selectedAlgorithm))
 
         
@@ -37,6 +36,22 @@ def page():
 
     else:
         
-        return render_template('page.html', city = request.args.get('city'), algorithm = request.args.get('algorithm'))
+        city = request.args.get('city')
+        algorithm = request.args.get('algorithm')
+
+        # we get the city and the country of the city
+        city = get_city_and_country(city)
+
+        date = get_date()
+        time = get_hour()
+
+        print ("date and time are", date, time)
+        print ("City is", city)
+        # if there is no algorithm (because it is predefined as ANN):
+        if not algorithm:
+            return render_template('page.html', city = city, algorithm = "ANN", date=date, time=time)
+        else:
+
+            return render_template('page.html', city = city, algorithm = algorithm, date=date, time=time)
 
 
