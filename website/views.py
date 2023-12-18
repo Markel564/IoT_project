@@ -8,12 +8,19 @@ def home():
     if request.method == 'POST':        
         
         selected_city = request.form.get('selectedCity')
-        print (selected_city)
+
+        selectedAlgorithm = request.form.get('selectedAlgorithm')
+        
         if not selected_city:
 
             flash('Please select a city', category = 'error')
             return redirect(url_for('views.home'))
-        return redirect(url_for('views.page', city = selected_city))
+        
+        print ("selected city is", selected_city)
+        print ("selected algo is", selectedAlgorithm)
+        return redirect(url_for('views.page', city = selected_city, algorithm = selectedAlgorithm))
+
+        
 
     else:
         return render_template('home.html')
@@ -30,6 +37,6 @@ def page():
 
     else:
         
-        return render_template('page.html', city = request.args.get('city'))
+        return render_template('page.html', city = request.args.get('city'), algorithm = request.args.get('algorithm'))
 
 

@@ -8,15 +8,15 @@
     <h3>Choose Algorithm:</h3>
     <div class="machine-learning">
         <div class="form-check">
-            <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>
-            <label class="form-check-label" for="exampleRadios1">
-              ANN
+            <input class="form-check-input" type="radio" name="selectedAlgorithm" id="algorithm1" value="ANN" checked>
+            <label class="form-check-label" for="algorithm1">
+                ANN
             </label>
-          </div>
+        </div>
         <div class="form-check">
-            <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
-            <label class="form-check-label" for="exampleRadios2">
-              LSTM
+            <input class="form-check-input" type="radio" name="selectedAlgorithm" id="algorithm2" value="LSTM">
+            <label class="form-check-label" for="algorithm2">
+                LSTM
             </label>
         </div>
     </div>
@@ -39,6 +39,7 @@
 
 <form method="POST" action="/" id="cityForm">
     <input type="hidden" name="selectedCity" id="selectedCity" value="">
+    <input type="hidden" name="selectedAlgorithm" id="selectedAlgorithm" value="">
     <button type="submit" class="btn go-button btn-success" id="go-button">GO!</button>
 </form>
 
@@ -53,7 +54,18 @@
     document.getElementById("dropdownOptions").classList.remove("show");
   }
 
-  // Cerrar el menú desplegable si el usuario hace clic fuera de él
+  document.addEventListener('DOMContentLoaded', function () {
+        var algorithmRadios = document.querySelectorAll('input[name="selectedAlgorithm"]');
+        algorithmRadios.forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                // Update the selectedAlgorithm value when a radio button is selected
+                document.getElementById("selectedAlgorithm").value = this.value;
+            });
+        });
+    });
+
+
+
   window.onclick = function(event) {
     if (!event.target.matches('.dropdown-toggle')) {
       var dropdowns = document.getElementsByClassName("dropdown-menu");

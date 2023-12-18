@@ -125,7 +125,36 @@ form {
 }
 
 .separator {
-  margin: 0 30px; /* Ajusta el margen según tus preferencias para separar los elementos */
+  margin: 0 30px; 
+}
+
+.head_info {
+  height: 100px;
+  display: flex;
+  flex-direction: row; /* Change to row to align items horizontally */
+  align-items: center;
+  text-align: left;
+  margin-left: 20px;
+}
+
+.back-button {
+  background-color: #33b249;
+  width: 100px;
+  border-radius: 10px;
+  margin-right: 10px; /* Add margin to separate button and algorithm */
+}
+
+.head_info h1 {
+  color: white;
+  font-size: 40px;
+  font-family: 'Montserrat', sans-serif;
+  margin-top: 10px; /* Add margin to separate city from other elements */
+}
+
+.head_info h2 {
+  color: white;
+  font-size: 20px;
+  font-family: 'Montserrat', sans-serif;
 }
 
 
@@ -133,17 +162,17 @@ form {
 
 /* Style for the checkbox container */
 .form-check {
-  margin-bottom: 10px; /* Add margin for spacing between checkboxes */
+  margin-bottom: 10px; 
 }
 
 /* Style for the checkbox input */
 .form-check-input {
-  width: 20px; /* Adjust the width of the checkbox */
-  height: 20px; /* Adjust the height of the checkbox */
-  margin-top: 2px; /* Adjust the vertical alignment of the checkbox */
-  background-color: #fff; /* Set the background color to white for unchecked checkboxes */
-  border: 1px solid #28a745; /* Add a border for better visibility */
-  border-radius: 3px; /* Optional: Add border-radius for rounded corners */
+  width: 20px;
+  height: 20px; 
+  margin-top: 2px; 
+  background-color: #fff; 
+  border: 1px solid #28a745; 
+  border-radius: 3px; 
 }
 
 /* Style for the checked checkbox input */

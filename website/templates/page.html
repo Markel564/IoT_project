@@ -4,9 +4,18 @@
 
 {% block content %}
 
-<h1>{{city}}</h1>
-<form method="POST" action="/page" id="cityForm">
-    <button type="submit" class="btn go-button btn-success" id="back-button" name="button">BACK</button>
-</form>
+<div class="head_info">
+    <div class="top-row">
+        <form method="POST" action="/page" id="cityForm">
+            <button type="submit" class="btn back-button btn-success" id="back-button" name="button">BACK</button>
+        </form>
+        <h2>{{algorithm}}</h2>
+    </div>
+    <h1>{{city}}</h1>
+</div>
+
+
+
+
 
 {% endblock %}
