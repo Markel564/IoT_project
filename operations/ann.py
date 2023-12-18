@@ -58,7 +58,6 @@ class Ann(nn.Module):
     
     def save_model(self, filepath): 
         """
-        Johannes testing saving remove if necessary
         Saves the model's state dictionary to the specified filepath.
         """
         torch.save(self.state_dict(), filepath)    
