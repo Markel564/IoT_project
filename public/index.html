@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+    <title>Welcome to Machine Forecast</title>
 
     <!-- update the version number as needed -->
     <script defer src="/__/firebase/10.7.1/firebase-app-compat.js"></script>
@@ -34,8 +34,13 @@
   <body>
     <div id="message">
       <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
+      <h1>Enter City for Prediction</h1>
+      <form action="/predict" method="post">
+          <label for="city">:WeatherAPP</label>
+          <input type="text" id="city" name="city">
+          <input type="submit" value="Predict"
+      </form>
+      <p>You're seeing this because you've successfully setup Firebase Hosting.Testing. Now it's time to go build something extraordinary!</p>
       <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
     </div>
     
