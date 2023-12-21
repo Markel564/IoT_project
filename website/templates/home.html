@@ -10,14 +10,16 @@
         <div class="form-check">
             <input class="form-check-input" type="radio" name="selectedAlgorithm" id="algorithm1" value="ANN" checked>
             <label class="form-check-label" for="algorithm1">
-                ANN
+                <h3>ANN</h3>
             </label>
+            <img src="{{ url_for('static', filename='images/info.svg') }}" alt="Logo" class="info-logo", onclick="sendSignal('ANN')">
         </div>
         <div class="form-check">
             <input class="form-check-input" type="radio" name="selectedAlgorithm" id="algorithm2" value="LSTM">
             <label class="form-check-label" for="algorithm2">
-                LSTM
+              <h3>LSTM</h3>
             </label>
+            <img src="{{ url_for('static', filename='images/info.svg') }}" alt="Logo" class="info-logo" onclick="sendSignal('LSTM')">
         </div>
     </div>
 </div>
@@ -25,7 +27,7 @@
 
 <div class="dropdown">
   <h4>City</h4>
-  <button class="btn btn-secondary custom-button dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown()">
+  <button class="btn btn-success dropdown-toggle"  type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown()">
     <h5 id="selectedOption">Select City</h5>
   </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="dropdownOptions">
@@ -78,6 +80,16 @@
       }
     }
   }
+
+  function sendSignal(algorithm) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/signal", true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({
+            algorithm: algorithm
+        }));
+    }
+
 </script>
 
 

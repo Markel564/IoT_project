@@ -40,16 +40,19 @@ body {
 }
 
 
-.custom-button{
+.btn-success{
   margin-top: 10px;
   width: 300px;
+  background-color: white;
 }
 
+.btn-success:hover{
+  background-color: white;
+}
 
-
-.custom-button h5{
-  color: white;
-  font-size: 15px;
+.btn-success h5{
+  color: black;
+  font-size: 20px;
 }
 
 form {
@@ -58,6 +61,7 @@ form {
   align-items: center;
   height: 100vh; /* Adjust as needed to center vertically within the viewport */
 }
+
 .go-button{
   background-color: #33b249;
   width: 100px;
@@ -65,11 +69,17 @@ form {
   align-self: center;
 }
 
+.go-button:hover{
+  background-color: white;
+  color: black;
+}
+
+
 .machine-learning {
   color: white;
   font-size: 15px;
   font-family: 'Montserrat', sans-serif; 
-
+  width: 10%;
 }
 
 .algorithms {
@@ -82,7 +92,7 @@ form {
 }
 .algorithms h3 {
   color: white;
-  font-size: 20px;
+  font-size: 30px;
   font-family: 'Montserrat', sans-serif;
   margin-right: 20px; /* Adjust as needed for spacing */
 }
@@ -151,6 +161,11 @@ form {
   margin-right: 10px;
 }
 
+.back-button:hover{
+  background-color: white;
+  color: black;
+}
+
 .head_info h1 {
   color: white;
   font-size: 40px;
@@ -167,11 +182,15 @@ form {
 }
 
 
-
+.info-logo{
+  margin-left: 20px;
+}
 
 
 /* Style for the checkbox container */
 .form-check {
+  display: flex;
+  flex-wrap: wrap;
   margin-bottom: 10px; 
 }
 
@@ -181,8 +200,6 @@ form {
   height: 20px; 
   margin-top: 2px; 
   background-color: #fff; 
-  border: 1px solid #28a745; 
-  border-radius: 3px; 
 }
 
 /* Style for the checked checkbox input */
@@ -193,4 +210,7 @@ form {
 /* Style for the checkbox label */
 .form-check-label {
   margin-left: 5px; /* Add some spacing between the checkbox and the label */
+  display: flex;
+  flex-wrap: wrap;
 }
+
