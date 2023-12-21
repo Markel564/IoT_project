@@ -35,7 +35,12 @@ df = adjust_dataset(df, target_variable=target_variable)
 print (df.shape)
 
 model = Ann(df, target_variable=target_variable)
-model.train_model()
+path = "././models/temperature_celsius_ann_model.pth"
+#model = torch.load(path)
+
+model.load_state_dict(torch.load(path))
+print(type(model))
+#model.train_model()
 
 df = pd.read_csv('././docs/data/GlobalWeatherRepository.csv')
 df = df[df["location_name"] == "Madrid"]
