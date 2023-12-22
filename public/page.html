@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{%block title%}Page{%endblock%}
+
+{% block content %}
+
+<div class="head_info">
+    <div class="top-row">
+        <form method="POST" action="/page" id="cityForm">
+            <button type="submit" class="btn back-button btn-success" id="back-button" name="button">BACK</button>
+            <h1>{{algorithm}}</h1>
+        </form>
+    </div>
+    <h2><br />{{date}}</h2>
+    <h1>{{city}}</h1>
+    <br />
+    <h2>{{time}}</h2>
+</div>
+
+
+
+
+{% endblock %}
