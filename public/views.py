@@ -16,7 +16,7 @@ def home():
 
             flash('Please select a city', category = 'error')
             return redirect(url_for('views.index'))
-        
+        print ('testar lte')   
         return redirect(url_for('views.page', city = selected_city, algorithm = selectedAlgorithm))
 
         

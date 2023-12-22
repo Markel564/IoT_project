@@ -3,6 +3,7 @@ import numpy as np
 import torch
 import pandas as pd
 from ann_model import Ann
+from lstm import LSTMPredictorWrapper
 from adjust_dataset import adjust_dataset
 
 # Example of loading the model
@@ -34,11 +35,12 @@ target_variable = 'temperature_celsius'
 df = adjust_dataset(df, target_variable=target_variable)
 print (df.shape)
 
-model = Ann(df, target_variable=target_variable)
-path = "././models/temperature_celsius_ann_model.pth"
+#model = Ann(df, target_variable=target_variable)
+model = LSTMPredictorWrapper(df, target_variable=target_variable)
+path = "././models/temperature_celsius_lstm_model.pth"
 #model = torch.load(path)
 
-model.load_state_dict(torch.load(path))
+model.load_model(path)
 print(type(model))
 #model.train_model()
 
