@@ -18,7 +18,6 @@ warnings.filterwarnings('ignore')
 
 def get_data(city, target_variable):
 
-    create_data()
 
     df = pd.read_csv("./docs/data/GlobalWeatherRepository.csv")
 
@@ -68,6 +67,7 @@ def create_data():
 
 
 def adjust_dataset(df,target_variable):
+    
     """
     df: dataframe to be adjusted
     location: location that the user has selected to predict the weather
@@ -90,13 +90,23 @@ def adjust_dataset(df,target_variable):
     df.drop(columns=constant_cols, inplace=True)
 
 
-
     df.drop(columns=['condition_text'], inplace=True)
+
+
+    
+
+
     # 4. Apply one hot encoding for categorical columns (but not to dates)
     categorical_variables = df.select_dtypes(include=['object']).columns
     categorical_variables = categorical_variables.drop(['sunrise', 'sunset', 'moonrise', 'moonset', 'location_name'])
-    df = pd.get_dummies(df, columns=categorical_variables)
-    
+
+
+
+    # CHANGES
+    # df = pd.get_dummies(df, columns=categorical_variables)
+    df.drop(columns=categorical_variables, inplace=True)
+
+
 
     # 5. There are instantes with moonset and moonrise where there are missing values, because there is none. We 
     # will delete those rows
@@ -133,6 +143,9 @@ def adjust_dataset(df,target_variable):
     outliers = (abs_z_scores > 3).all(axis=1)
     df_no_outliers = df[~outliers]
 
+
+        
+    
     
     return df_no_outliers
 
