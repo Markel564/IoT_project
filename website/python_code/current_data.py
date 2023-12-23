@@ -37,6 +37,7 @@ def get_data(city, target_variable):
 
     final_df = adjust_dataset(df, target_variable)
     
+    final_df = final_df.drop(columns=["location_name"])
 
     return final_df
 

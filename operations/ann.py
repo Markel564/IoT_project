@@ -62,6 +62,14 @@ class Ann(nn.Module):
         """
         torch.save(self.state_dict(), filepath)    
 
+    def load_model(self, filepath):
+        """
+        Loads the model's state dictionary from the specified filepath.
+        """
+        state_dict = torch.load(filepath)
+        self.model.load_state_dict(state_dict)
+
+
     def y_conversion(self, train_size):
         """
         input: train_size (float)

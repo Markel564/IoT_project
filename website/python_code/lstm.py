@@ -41,11 +41,19 @@ class LSTMPredictorWrapper:
         self.shuffle_data() # shuffle the data (windows, so order is maintained)
         self.build_model()
 
+    def load_model(self, filepath):
+        """
+        Loads the internal LSTMPredictor model from the specified filepath.
+        """
+        state_dict = torch.load(filepath)
+        self.model.load_state_dict(state_dict)
+        self.model.eval()
+
     def save_model(self, filepath):
         """
-        Saves the internal LSTMPredictor model to the specified filepath. Johannes testing to save model
+        Saves the internal LSTMPredictor model to the specified filepath.
         """
-        torch.save(self.model.state_dict(), filepath)    #remove this whole method if it not works
+        torch.save(self.model.state_dict(), filepath)
 
     def x_conversion(self, train_size):
         """

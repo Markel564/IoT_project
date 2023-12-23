@@ -2,12 +2,17 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from .python_code.city import get_city_and_country
 from .python_code.time import get_date, get_hour
 from .python_code.current_data import get_data, create_data
-from .python_code.ann_model import Ann
-from .python_code.lstm import LSTMPredictorWrapper
 from .python_code.adjust_dataset import adjust_dataset
-import torch
 import pandas as pd
+from .python_code.get_models_and_paths import get_models, get_paths
+
 views = Blueprint('views', __name__)
+
+
+target_variables = ['temperature_celsius', 'humidity', 'precip_mm', 'cloud', 'wind_kph']
+
+
+# models = get_models(target_variables, paths)
 
 
 @views.route('/', methods = ['GET', 'POST'])
@@ -36,7 +41,7 @@ def page():
     if request.method == 'POST':    #go back to home
         
         button = request.form.get('button')
-        print(button)
+        
 
         return redirect(url_for('views.home'))
 
@@ -49,12 +54,15 @@ def page():
         date = get_date()
         time = get_hour()
 
-
+        
         # we get the data for the selected city
         target_variables = ['temperature_celsius', 'humidity', 'precip_mm', 'cloud', 'wind_kph']
 
         # each dataset differes for each target variable
         datasets = []
+
+       
+
 
         # we dowlnoad the data
         create_data()
@@ -62,28 +70,37 @@ def page():
             # and we get the last 7 days's dataset for each target variable
             datasets.append(get_data(city, target_variable))
 
-        print ("Datasets created")
+        
 
         # we get the paths
-        paths = get_paths(algorithm, target_variables)
+        paths = get_paths(target_variables, algorithm)
 
-        print ("Paths created")
-        # and the models 
+        
+        # and the models
+        print ("Creating models with algorithm: ", algorithm)
         models = get_models(target_variables, algorithm, paths)
         print ("Models created")
         
 
+
+        # lets print the predictions
+        predictions = []
+        for i in range(5):
+            data_right_now = get_data(city, target_variables[i])
+            predictions.append(models[i].predict(data_right_now))
+            print (predictions[i])
+
+
+        
         # we get the city and the country of the city
         city = get_city_and_country(city)
 
 
         # if there is no algorithm (because it is predefined as ANN):
         if not algorithm:
-            print ("No algorithm")
             return render_template('page.html', city = city, algorithm = "ANN", date=date, time=time)
         else:
             
-            print ("Algorithm")
             return render_template('page.html', city = city, algorithm = algorithm, date=date, time=time)
 
 
@@ -110,40 +127,4 @@ def signal():
 
 
 
-    
-def get_paths(algorithm, target_variables):
 
-    paths = []
-
-
-    if algorithm == "ANN":
-
-        for i in range(5):
-            paths.append("./models/{}_ann_model.pth".format(target_variables[i]))
-    else:
-        for i in range(5):
-            paths.append("./models/{}_lstm_model.pth".format(target_variables[i]))
-            
-    return paths
-
-def get_models(target_variables, algorithm, paths):
-
-    models = []
-
-    
-    if algorithm == "ANN":
-
-        for i in range(5):
-            
-            # for speed purposes, we load the dataset for each target variable instead of creating it
-            new_df = pd.read_csv("./docs/data/{}/GlobalWeatherRepository_{}.csv".format(target_variables[i], target_variables[i]))
-            models.append(Ann(new_df, target_variable=target_variables[i]))
-            models[i].load_state_dict(torch.load(paths[i]))
-    else:
-        for i in range(5):
-
-            new_df = pd.read_csv("./docs/data/{}/GlobalWeatherRepository_{}.csv".format(target_variables[i], target_variables[i]))
-            models.append(LSTMPredictorWrapper(new_df, target_variable=target_variables[i]))
-            models[i].load_state_dict(torch.load(paths[i]))
-    
-    return models
