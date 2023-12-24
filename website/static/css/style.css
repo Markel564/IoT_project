@@ -214,3 +214,46 @@ form {
   flex-wrap: wrap;
 }
 
+
+.third-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+
+.container-top{
+  display: flex;
+  justify-content: space-between;
+  width: 85%;
+}
+
+
+.right-img{
+  margin-top: 40px;
+  width: 150px;
+  height: auto;
+
+  color: white;
+}
+
+.right-side{
+  display: flex;
+  align-items: center;
+}
+
+.right-info{
+  margin-left: 50px;
+}
+
+
+.right-info h2 {
+  color: white;
+  font-size: 20px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.right-info h1 {
+  color: white;
+  font-size: 40px;
+  font-family: 'Montserrat', sans-serif;
+}

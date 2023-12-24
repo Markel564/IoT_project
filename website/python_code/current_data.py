@@ -29,7 +29,7 @@ def get_data(city, target_variable):
 
     df = df.sort_values(by="last_updated", ascending=False).head(7)
 
-    target_variables = ["temperature_celsius", "humidity", "wind_kph", "precip_mm", "cloud"]
+    target_variables = ['temperature_celsius', 'humidity', 'precip_mm', 'cloud', 'wind_kph']
 
     if target_variable not in target_variables:
         raise ValueError("The target variable is not valid. Valid variables are: {}".format(target_variables))

@@ -1,10 +1,11 @@
 """
-This file receives the 5 target variables and determines the weather condition
+This file has the functions related to the condition of the weather
+
 """
 
 
 
-def condition(temp, precip, cloud, humidity, wind):
+def condition(temp, humidity, precip, cloud, wind):
     
     """
     options are:
@@ -15,15 +16,18 @@ def condition(temp, precip, cloud, humidity, wind):
     - windy             
     - cloudy-sunny      
     """
+
+    print ("temp: ", temp, "precip: ", precip, "cloud: ", cloud, "humidity: ", humidity, "wind: ", wind)
     if wind >= 10:
-        return "windy"  
+        return "WINDY"  
     if precip >= 1 and temp >= 0:
-        return "rainy" 
+        return "RAINY"
     if temp <= 0 and precip >= 1:
-        return "snowy"
-    if cloud >= 70: # precip is low so it does not rain
-        return "cloudy"
-    if cloud >= 50:
-        return "cloudy-sunny"     
+        return "SNOWY"
+    if cloud >= 50: # precip is low so it does not rain
+        return "CLOUDY"
+    if cloud >= 30:
+        return "CLOUDY-SUNNY"  
     else:
         return "sunny"
+

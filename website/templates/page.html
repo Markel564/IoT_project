@@ -4,18 +4,51 @@
 
 {% block content %}
 
-<div class="head_info">
-    <div class="top-row">
-        <form method="POST" action="/page" id="cityForm">
-            <button type="submit" class="btn back-button btn-success" id="back-button" name="button">BACK</button>
-            <h1>{{algorithm}}</h1>
-        </form>
+<div class = "container-top">
+    <div class="head_info">
+        <div class="top-row">
+            <form method="POST" action="/page" id="cityForm">
+                <button type="submit" class="btn back-button btn-success" id="back-button" name="button">BACK</button>
+                <h1>{{algorithm}}</h1>
+            </form>
+        </div>
+        <h2><br />{{date}}</h2>
+        <h1>{{city}}</h1>
+        <br />
+        <div class ="third-row">
+            <h2>{{ info[0]}}</h2>
+            <h2>{{time}}</h2>
+        </div>  
     </div>
-    <h2><br />{{date}}</h2>
-    <h1>{{city}}</h1>
-    <br />
-    <h2>{{time}}</h2>
+
+    <div class = "right-side">
+        <br />
+        <div class = "image-right">
+            {% if info[0] == "RAINY" %}
+            <img src="{{ url_for('static', filename='images/rainy.svg') }}" alt="Logo" class="right-img">
+            {% elif info[0] == "SUNNY" %}
+            <img src="{{ url_for('static', filename='images/sunny.svg') }}" alt="Logo" class="right-img">
+            {% elif info[0] == "CLOUDY" %}
+            <img src="{{ url_for('static', filename='images/cloudy.svg') }}" alt="Logo" class="right-img">
+            {% elif info[0] == "SNOWY" %}
+            <img src="{{ url_for('static', filename='images/snowy.svg') }}" alt="Logo" class="right-img">
+            {% elif info[0] == "CLOUDY-SUNNY" %}
+            <img src="{{ url_for('static', filename='images/cloud-sunny.svg') }}" alt="Logo" class="right-img">
+            {% elif info[0] == "WINDY" %}
+            <img src="{{ url_for('static', filename='images/windy.svg') }}" alt="Logo" class="right-img">
+            {% endif %}
+        </div>
+
+        <div class = "right-info">
+            <h1>{{info[3]}}°C</h1>
+            <h2>wind: {{info[-1]}}km/h</h2>
+            <h2>humidity: {{info[-3]}}%</h2>
+            <h2>precipitation: {{info[-2]}}mm</h2>
+        </div>
+    </div>
+    
 </div>
+
 
 
 
