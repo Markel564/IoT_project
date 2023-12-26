@@ -257,3 +257,47 @@ form {
   font-size: 40px;
   font-family: 'Montserrat', sans-serif;
 }
+
+.container-bottom {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 70%;
+  margin: 20px auto;
+  height: 500px;
+}
+
+.container-left, .container-mid, .container-right {
+  width: 33%;
+  height: 100%;
+  border: 2px solid white;
+  margin: 10px;
+  border-radius: 20px;
+}
+
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.bot-img {
+  margin-top: 50px;
+  width: 100px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.container-bottom h2 {
+  color: white;
+  font-size: 20px;
+  font-family: 'Montserrat', sans-serif;
+  margin-left: 20px;
+}
+
+.date, .temp{
+  margin-top: 20px;
+  margin-bottom: 20px;
+}

@@ -41,3 +41,20 @@ def get_hour():
     hour = date.strftime("%H")
     minute = date.strftime("%M")
     return hour + ":" + minute
+
+
+def get_dates():
+    """
+    This function returns an array with this day and the following 2 days
+
+    for example, if it was monday, it would return [monday, tuesday, wednesday]
+    """
+
+    date = datetime.datetime.now()
+    day = date.strftime("%A")
+    days = [day]
+    for i in range(1, 3):
+        date += datetime.timedelta(days=1)
+        day = date.strftime("%A")
+        days.append(day)
+    return days

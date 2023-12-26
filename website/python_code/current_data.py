@@ -25,10 +25,12 @@ def get_data(city, target_variable):
 
     df = df[df["location_name"] == city]
 
+    
     # we order by last_updated and get the last 7 days
 
     df = df.sort_values(by="last_updated", ascending=False).head(7)
-
+    
+    
     target_variables = ['temperature_celsius', 'humidity', 'precip_mm', 'cloud', 'wind_kph']
 
     if target_variable not in target_variables:
@@ -37,8 +39,9 @@ def get_data(city, target_variable):
 
     final_df = adjust_dataset(df, target_variable)
     
+    
     final_df = final_df.drop(columns=["location_name"])
-
+    
     return final_df
 
 def create_data():
@@ -78,7 +81,7 @@ def adjust_dataset(df,target_variable):
 
     # 1. Order by location_name
     df.sort_values(by=['location_name', 'last_updated'], inplace=True)
-
+    
     # 2. Order by last_updated and eliminate it since we dont need them
     df.drop(columns=['last_updated'], inplace=True)
 
@@ -94,8 +97,6 @@ def adjust_dataset(df,target_variable):
     df.drop(columns=['condition_text'], inplace=True)
 
 
-    
-
 
     # 4. Apply one hot encoding for categorical columns (but not to dates)
     categorical_variables = df.select_dtypes(include=['object']).columns
@@ -107,14 +108,17 @@ def adjust_dataset(df,target_variable):
     # df = pd.get_dummies(df, columns=categorical_variables)
     df.drop(columns=categorical_variables, inplace=True)
 
+    
 
+    # 5. There are instantes with moonset and moonrise where there are missing values, because there is none. 
+    # we will change them to NaT and then fill them with the previous value
+    df['moonset'] = df['moonset'].replace('No moonset', pd.NaT).fillna(method='bfill')
+    df['moonrise'] = df['moonrise'].replace('No moonrise', pd.NaT).fillna(method='bfill')
 
-    # 5. There are instantes with moonset and moonrise where there are missing values, because there is none. We 
-    # will delete those rows
-    df['moonset'] = df['moonset'].replace('No moonset', pd.NaT).fillna(method='ffill')
-    df['moonrise'] = df['moonrise'].replace('No moonrise', pd.NaT).fillna(method='ffill')
-    # now we drop these rows
-    df.dropna(inplace=True)
+   
+    
+
+    
 
     # # 6 Change format of object columns to timestamp
     df['sunrise'] = pd.to_datetime(df['sunrise']).apply(lambda x: x.timestamp() if not pd.isna(x) else x)
@@ -122,6 +126,7 @@ def adjust_dataset(df,target_variable):
     df['moonrise'] = pd.to_datetime(df['moonrise']).apply(lambda x: x.timestamp() if not pd.isna(x) else x)
     df['moonset'] = pd.to_datetime(df['moonset']).apply(lambda x: x.timestamp() if not pd.isna(x) else x)
 
+    
 
     scaler = StandardScaler()
     numerical_columns = df.select_dtypes(include=['int', 'float']).columns

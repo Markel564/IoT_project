@@ -18,7 +18,7 @@ def condition(temp, humidity, precip, cloud, wind):
     """
 
     print ("temp: ", temp, "precip: ", precip, "cloud: ", cloud, "humidity: ", humidity, "wind: ", wind)
-    if wind >= 10:
+    if wind >= 15:
         return "WINDY"  
     if precip >= 1 and temp >= 0:
         return "RAINY"
@@ -29,5 +29,5 @@ def condition(temp, humidity, precip, cloud, wind):
     if cloud >= 30:
         return "CLOUDY-SUNNY"  
     else:
-        return "sunny"
+        return "SUNNY"
 

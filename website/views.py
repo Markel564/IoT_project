@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session, jsonify
 from .python_code.city import get_city_and_country
-from .python_code.time import get_date, get_hour
+from .python_code.time import get_date, get_hour, get_dates
 from .python_code.current_data import get_data, create_data
 from .python_code.adjust_dataset import adjust_dataset
 import pandas as pd
@@ -54,7 +54,6 @@ def page():
         algorithm = request.args.get('algorithm')
 
         # there is a chance the user does not select an algorithm (by default is ANN)
-
         if not algorithm:
             algorithm = "ANN"
         # we get the date and time
@@ -91,6 +90,7 @@ def page():
         predictions = []
         for i in range(5):
             data_right_now = get_data(city, target_variables[i])
+            print (data_right_now.shape)
             predictions.append(models[i].predict(data_right_now))
         
 
@@ -110,9 +110,13 @@ def page():
         city = get_city_and_country(city)
 
 
-        # if there is no algorithm (because it is predefined as ANN):
+        # we also will send the dats (monday, tuesday, ...)
+
+        dates = get_dates()
         
-        return render_template('page.html', city = city, algorithm = algorithm, date=date, time=time, info = info)
+        
+        
+        return render_template('page.html', city = city, algorithm = algorithm, date=date, time=time, info = info, dates = dates)
         
             
             

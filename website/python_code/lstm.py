@@ -170,6 +170,7 @@ class LSTMPredictorWrapper:
         X = torch.tensor(X, dtype=torch.float32).reshape(1, -1, self.X_train.size(2))
         with torch.no_grad():
             predictions = self.forward(X)
+
         return predictions[0].numpy()
 
     def forward(self, x):

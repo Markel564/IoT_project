@@ -16,10 +16,9 @@ def adjust_dataset(df,target_variable):
 
     return: adjusted dataframe
     """
-
+    
     # 1. Order by location_name
     df.sort_values(by=['location_name', 'last_updated'], inplace=True)
-
     # 2. Order by last_updated and eliminate it since we dont need them
     df.drop(columns=['last_updated'], inplace=True)
 
@@ -49,13 +48,12 @@ def adjust_dataset(df,target_variable):
     df.drop(columns=categorical_variables, inplace=True)
 
 
-
     # 5. There are instantes with moonset and moonrise where there are missing values, because there is none. We 
     # will delete those rows
-    df['moonset'] = df['moonset'].replace('No moonset', pd.NaT).fillna(method='ffill')
-    df['moonrise'] = df['moonrise'].replace('No moonrise', pd.NaT).fillna(method='ffill')
-    # now we drop these rows
-    df.dropna(inplace=True)
+    df['moonset'] = df['moonset'].replace('No moonset', pd.NaT).fillna(method='bfill')
+    df['moonrise'] = df['moonrise'].replace('No moonrise', pd.NaT).fillna(method='bfill')
+    
+
 
     # # 6 Change format of object columns to timestamp
     df['sunrise'] = pd.to_datetime(df['sunrise']).apply(lambda x: x.timestamp() if not pd.isna(x) else x)
@@ -67,6 +65,7 @@ def adjust_dataset(df,target_variable):
     scaler = StandardScaler()
     numerical_columns = df.select_dtypes(include=['int', 'float']).columns
     numerical_columns = numerical_columns.drop(target_variable)
+
     # numerical_columns = numerical_columns.drop(['sunrise', 'sunset', 'moonrise', 'moonset'])
     scaler.fit(df[numerical_columns])
     df[numerical_columns] = scaler.transform(df[numerical_columns])
@@ -85,9 +84,6 @@ def adjust_dataset(df,target_variable):
     outliers = (abs_z_scores > 3).all(axis=1)
     df_no_outliers = df[~outliers]
 
-
-        
-    
-    
+  
     return df_no_outliers
 

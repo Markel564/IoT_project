@@ -15,6 +15,7 @@ def pack_info(condition_1, condition_2, condition_3, temp_day_1, temp_day_2, tem
     info_to_send.append(condition_2)
     info_to_send.append(condition_3)
 
+
     info_to_send.append(round(temp_day_1, 0))
     info_to_send.append(round(temp_day_2, 0))
     info_to_send.append(round(temp_day_3, 0))

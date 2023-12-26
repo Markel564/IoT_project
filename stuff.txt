@@ -14,4 +14,9 @@ chmod 600 ~/.kaggle/kaggle.json
 
 
 models last saved on 23/12
+dataset last updated 25/12
+
+we can make it so that precipitation, humidity, cloud and wind speed are not 
+negative, yet the purpose of the app is to show how models predict weather, and 
+we would be hiding the fact that the models are not perfect
 

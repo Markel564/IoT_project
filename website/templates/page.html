@@ -49,8 +49,88 @@
     
 </div>
 
-
-
+<div class = "container-bottom">
+    <div class = "container-left">
+        <div class = "content">
+            <div class = "image-bot">
+                {% if info[0] == "RAINY" %}
+                <img src="{{ url_for('static', filename='images/rainy.svg') }}" alt="Logo" class="bot-img">
+                {% elif info[0] == "SUNNY" %}
+                <img src="{{ url_for('static', filename='images/sunny.svg') }}" alt="Logo" class="bot-img">
+                {% elif info[0] == "CLOUDY" %}
+                <img src="{{ url_for('static', filename='images/cloudy.svg') }}" alt="Logo" class="bot-img">
+                {% elif info[0] == "SNOWY" %}
+                <img src="{{ url_for('static', filename='images/snowy.svg') }}" alt="Logo" class="bot-img">
+                {% elif info[0] == "CLOUDY-SUNNY" %}
+                <img src="{{ url_for('static', filename='images/cloud-sunny.svg') }}" alt="Logo" class="bot-img">
+                {% elif info[0] == "WINDY" %}
+                <img src="{{ url_for('static', filename='images/windy.svg') }}" alt="Logo" class="bot-img">
+                {% endif %}
+            </div>
+    
+            <div class = "date">
+                <h2>{{dates[0]}}</h2>
+            </div>
+    
+            <div class = "temp">
+                <h2>{{info[3]}}°C</h2>
+            </div>
+        </div>
+        
+    </div>
+    <div class = "container-mid">
+        <div class = "content">
+            <div class = "image-bot">
+                {% if info[1] == "RAINY" %}
+                <img src="{{ url_for('static', filename='images/rainy.svg') }}" alt="Logo" class="bot-img">
+                {% elif info[1] == "SUNNY" %}
+                <img src="{{ url_for('static', filename='images/sunny.svg') }}" alt="Logo" class="bot-img">
+                {% elif info[1] == "CLOUDY" %}
+                <img src="{{ url_for('static', filename='images/cloudy.svg') }}" alt="Logo" class="bot-img">
+                {% elif info[1] == "SNOWY" %}
+                <img src="{{ url_for('static', filename='images/snowy.svg') }}" alt="Logo" class="bot-img">
+                {% elif info[1] == "CLOUDY-SUNNY" %}
+                <img src="{{ url_for('static', filename='images/cloud-sunny.svg') }}" alt="Logo" class="bot-img">
+                {% elif info[1] == "WINDY" %}
+                <img src="{{ url_for('static', filename='images/windy.svg') }}" alt="Logo" class="bot-img">
+                {% endif %}
+            </div>
+            <div class = "date">
+                <h2>{{dates[1]}}</h2>
+            </div>
+            <div class = "temp">
+                <h2>{{info[4]}}°C</h2>
+            </div>
+        </div>
+        
+    </div>
+    <div class="container-right">
+        <div class = "content">
+            <div class = "image-bot">
+                {% if info[2] == "RAINY" %}
+                <img src="{{ url_for('static', filename='images/rainy.svg') }}" alt="Logo" class="bot-img">
+                {% elif info[2] == "SUNNY" %}
+                <img src="{{ url_for('static', filename='images/sunny.svg') }}" alt="Logo" class="bot-img">
+                {% elif info[2] == "CLOUDY" %}
+                <img src="{{ url_for('static', filename='images/cloudy.svg') }}" alt="Logo" class="bot-img">
+                {% elif info[2] == "SNOWY" %}
+                <img src="{{ url_for('static', filename='images/snowy.svg') }}" alt="Logo" class="bot-img">
+                {% elif info[2] == "CLOUDY-SUNNY" %}
+                <img src="{{ url_for('static', filename='images/cloud-sunny.svg') }}" alt="Logo" class="bot-img">
+                {% elif info[2] == "WINDY" %}
+                <img src="{{ url_for('static', filename='images/windy.svg') }}" alt="Logo" class="bot-img">
+                {% endif %}
+            </div>
+            <div class = "date">
+                <h2>{{dates[2]}}</h2>
+            </div>
+            <div class = "temp">
+                <h2>{{info[3]}}°C</h2>
+            </div>
+        </div>
+        
+    </div>
+</div>
 
 
 {% endblock %}

@@ -9,7 +9,7 @@ def get_city_and_country(city):
         return "Paris, France".upper()
     elif city == "Madrid":
         return "Madrid, Spain".upper()
-    elif city == "Stockholm":
-        return "Stockholm, Sweden".upper()
+    elif city == "Windhoek":
+        return "Windhoek, Namibia".upper()
     elif city == "Tokyo":
         return "Tokyo, Japan".upper()

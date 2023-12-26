@@ -163,12 +163,12 @@ class Ann(nn.Module):
 
         This function predicts the next 3 days of the input dataframe
         """
+
         X = df.drop(self.target_variable, axis=1).iloc[-self.window_size:].values
         X = torch.tensor(X, dtype=torch.float32).reshape(1, -1, self.window_size * self.X_train.size(2))
         with torch.no_grad():
             predictions = self(X)
-       
-
+              
         return predictions[0].numpy()
 
 
