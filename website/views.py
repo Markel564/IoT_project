@@ -17,25 +17,24 @@ target_variables = ['temperature_celsius', 'humidity', 'precip_mm', 'cloud', 'wi
 # models = get_models(target_variables, paths)
 
 
-@views.route('/', methods = ['GET', 'POST'])
+@views.route('/', methods=['GET', 'POST'])
 def home():
-    if request.method == 'POST':        
+    if request.method == 'POST':
         
-        selected_city = request.form.get('selectedCity')
+        
 
+        selected_city = request.form.get('selectedCity')
         selectedAlgorithm = request.form.get('selectedAlgorithm')
         
         if not selected_city:
-
-            flash('Please select a city', category = 'error')
+            flash('Please select a city', category='error')
             return redirect(url_for('views.home'))
-        
-        return redirect(url_for('views.page', city = selected_city, algorithm = selectedAlgorithm))
 
-        
+        return redirect(url_for('views.page', city=selected_city, algorithm=selectedAlgorithm))
 
     else:
         return render_template('home.html')
+
 
 
 @views.route('/page', methods = ['GET', 'POST'])
@@ -90,21 +89,31 @@ def page():
         predictions = []
         for i in range(5):
             data_right_now = get_data(city, target_variables[i])
-            print (data_right_now.shape)
             predictions.append(models[i].predict(data_right_now))
         
+        # since the predict method for each algorithm returns a different shape, we need to select
+        # the correct values depending on the algorithm
+        print ("Algorithm: ", algorithm)
+        if algorithm == "ANN":
+            condition_1 = condition(predictions[0][0][0], predictions[1][0][0], predictions[2][0][0], predictions[3][0][0], predictions[4][0][0])
+            condition_2 = condition(predictions[0][0][1], predictions[1][0][1], predictions[2][0][1], predictions[3][0][1], predictions[4][0][1])
+            condition_3 = condition(predictions[0][0][2], predictions[1][0][2], predictions[2][0][2], predictions[3][0][2], predictions[4][0][2])
 
-        condition_1 = condition(predictions[0][0][0], predictions[1][0][0], predictions[2][0][0], predictions[3][0][0], predictions[4][0][0])
-        condition_2 = condition(predictions[0][0][1], predictions[1][0][1], predictions[2][0][1], predictions[3][0][1], predictions[4][0][1])
-        condition_3 = condition(predictions[0][0][2], predictions[1][0][2], predictions[2][0][2], predictions[3][0][2], predictions[4][0][2])
+            info = pack_info(condition_1, condition_2, condition_3, predictions[0][0][0], predictions[0][0][1], predictions[0][0][2],
+            predictions[1][0][0], predictions[2][0][0], predictions[4][0][0])
+            
+        else:
+            condition_1 = condition(predictions[0][0], predictions[1][0], predictions[2][0], predictions[3][0], predictions[4][0])
+            condition_2 = condition(predictions[0][1], predictions[1][1], predictions[2][1], predictions[3][1], predictions[4][1])
+            condition_3 = condition(predictions[0][2], predictions[1][2], predictions[2][2], predictions[3][2], predictions[4][2])
+
+            info = pack_info(condition_1, condition_2, condition_3, predictions[0][0], predictions[0][1], predictions[0][2],
+            predictions[1][0], predictions[2][0], predictions[4][0])
+
+
         
 
-
         
-
-
-        info = pack_info(condition_1, condition_2, condition_3, predictions[0][0][0], predictions[0][0][1], predictions[0][0][2],
-        predictions[1][0][0], predictions[2][0][0], predictions[4][0][0])
 
         # we format the city and the country of the city
         city = get_city_and_country(city)
@@ -122,24 +131,5 @@ def page():
             
 
 
-@views.route('/signal', methods = ['GET', 'POST'])
-def signal():
-    if request.method == 'POST':
-        
-        # a json was sent
-        data = request.get_json() 
-        info_lstm = """
-        ROOT MEAN SQUARE ERRORS\n
-        temperature: 0.000000\n
-        humidity: 0.000000\n
-        precipitation: 0.000000\n
-        cloudiness: 0.000000\n
-        wind speed: 0.000000\n
-        """
-        print (data["algorithm"])
-        flash(info_lstm, category = 'success')
-        return jsonify({"message": "Signal processed successfully"})
 
-    else:
-        return redirect(url_for('views.home'))
 

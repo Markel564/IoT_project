@@ -12,15 +12,25 @@
             <label class="form-check-label" for="algorithm1">
                 <h3>ANN</h3>
             </label>
-            <img src="{{ url_for('static', filename='images/info.svg') }}" alt="Logo" class="info-logo", onclick="sendSignal('ANN')">
+            <img src="{{ url_for('static', filename='images/info.svg') }}" alt="Logo" class="info-logo" onclick="showInfo('ANN_info')">
         </div>
+        <div id="ANN_info" class="info-text" style="display: none;">
+          ANN is a computational model inspired by the human brain, consisting of interconnected nodes 
+          organized in layers
+          <br>
+          <a href="https://www.ibm.com/topics/neural-networks">More info</a>
+      </div>
         <div class="form-check">
             <input class="form-check-input" type="radio" name="selectedAlgorithm" id="algorithm2" value="LSTM">
             <label class="form-check-label" for="algorithm2">
               <h3>LSTM</h3>
             </label>
-            <img src="{{ url_for('static', filename='images/info.svg') }}" alt="Logo" class="info-logo" onclick="sendSignal('LSTM')">
+            <img src="{{ url_for('static', filename='images/info.svg') }}" alt="Logo" class="info-logo" onclick="showInfo('LSTM_info')">
         </div>
+        <div id="LSTM_info" class="info-text" style="display: none;">
+          LSTM is a type of recurrent neural network (RNN) designed to overcome the vanishing gradient problem
+          <a href="https://www.analyticsvidhya.com/blog/2021/03/introduction-to-long-short-term-memory-lstm/">More info</a>
+      </div>
     </div>
 </div>
 
@@ -81,19 +91,15 @@
     }
   }
 
-  function sendSignal(algorithm) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/signal", true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.send(JSON.stringify({
-            algorithm: algorithm
-        }));
+  function showInfo(infoId) {
+        var infoElement = document.getElementById(infoId);
+        if (infoElement.style.display === "none" || infoElement.style.display === "") {
+            infoElement.style.display = "block";
+        } else {
+            infoElement.style.display = "none";
+        }
     }
-
 </script>
-
-
-
 
 
 {% endblock %}
