@@ -307,3 +307,33 @@ form {
 #LSTM-info, #ANN-info{
   width: 100%;
 }
+
+
+#overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); 
+}
+
+.overlay-content {
+  background-color: #fff; 
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); 
+}
+
+
+.overlay-content h2 {
+  color: #333; /* Text color */
+}
+
+.overlay-content p {
+  color: #666; /* Text color */
+}

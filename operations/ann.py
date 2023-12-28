@@ -1,17 +1,19 @@
 """
 -- This file contains the implementation of the ANN model --
 
-A detail description of each function is provided in the docstring of each function.
+A description of each function is provided in the docstring of each function.
+
+A sliding window is used as an approach. The window size is 7 days and the output size is 3 days.
+The model is trained with 70% of the data and tested with the remaining 30%.
+
 """
 import pandas as pd
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, TensorDataset
 from sklearn.model_selection import ParameterGrid
-import matplotlib.pyplot as plt
 
 torch.manual_seed(42)
 
@@ -22,36 +24,39 @@ class Ann(nn.Module):
         Constructor of the ANN class
         """
 
-        self.df = df # receives a full dataframe standarized and adjusted
-        self.window_size = 7 # 7 days predict 3 days
+        self.df = df # receives a full dataframe standarized and adjusted (see adjust_dataset.py)
+        self.window_size = 7 # 7 days predicts 3 days
         self.output_size = 3
         self.target_variable = target_variable
         
 
         self.x_conversion(0.7)  # 70% of the data is used for training
-        self.y_conversion(0.7)
+        self.y_conversion(0.7)  # 70% of the data is used for training
 
-        self.shuffle_data() # shuffle the data (windows, so order is maintained)
-        self.build_model()
+        self.shuffle_data() # shuffle the data (the windows, so order is maintained)
+        self.build_model()  # build the model as soon as it is instantiated
 
     def x_conversion(self, train_size):
         """
         input: train_size (float)
         output: None
 
-        This function converts the input dataframe into a tensor of shape (num_samples, window_size, num_features)
+        This function creates the windows of the input data and converts it into a tensor of shape (num_samples, window_size, num_features)
+        It creates what we could consider as the X_train and X_test of the ANN
         """
         sequences = []
-
+        # Iterate over each city (we want thw windows to be of the same city)
         for city in self.df['location_name'].unique():
+            # we only get the data from each city
             city_data = self.df[self.df['location_name'] == city]
-
-            for i in range(len(city_data) - self.window_size - self.output_size + 1):
-                seq = city_data.iloc[i: i + self.window_size].drop([self.target_variable, 'location_name'], axis=1)
+            # and create the windows for each city
+            for i in range(len(city_data) - self.window_size - self.output_size + 1):   
+                # drop the target variable (as this is X) and the location name since it is not necessary for prediction
+                seq = city_data.iloc[i: i + self.window_size].drop([self.target_variable, 'location_name'], axis=1) 
 
                 sequences.append(seq.values)  
 
-  
+        # transform the list into a tensor
         self.X_train = torch.tensor(sequences[:int(len(sequences) * train_size)], dtype=torch.float32)
         self.X_test = torch.tensor(sequences[int(len(sequences) * train_size):], dtype=torch.float32)
 
@@ -62,28 +67,25 @@ class Ann(nn.Module):
         """
         torch.save(self.state_dict(), filepath)    
 
-    def load_model(self, filepath):
-        """
-        Loads the model's state dictionary from the specified filepath.
-        """
-        state_dict = torch.load(filepath)
-        self.model.load_state_dict(state_dict)
-
-
     def y_conversion(self, train_size):
         """
         input: train_size (float)
         output: None
 
-        This function converts the input dataframe into a tensor of shape (num_samples, window_size, num_features)
+        This function creates the windows of the input data and converts it into a tensor of shape (num_samples, window_size, num_features)
+        It creates what we could consider as the y_train and y_test of the ANN
         """
         labels = []
-        for city in self.df['location_name'].unique():
+        for city in self.df['location_name'].unique(): # Iterate over each city (again, we want the windows to be of the same city)
+            # we select the data of each city
             city_data = self.df[self.df['location_name'] == city]
 
             for i in range(self.window_size, len(city_data) - self.output_size + 1):
+                # and create a window with the target variable
                 label = city_data.iloc[i: i + self.output_size][self.target_variable]
                 labels.append(label.values)
+        
+        # transform the list into a tensor
         self.y_train = torch.tensor(labels[:int(len(labels) * train_size)], dtype=torch.float32)
         self.y_test = torch.tensor(labels[int(len(labels) * train_size):], dtype=torch.float32)
 
@@ -116,7 +118,9 @@ class Ann(nn.Module):
             nn.Linear(32, self.output_size)
         )
 
+        # the optimizer is an Adam optimizer
         self.optimizer = optim.Adam(self.model.parameters(), lr=0.001)
+        # we use MSE as the loss function
         self.criterion = nn.MSELoss()
         
     
@@ -127,21 +131,28 @@ class Ann(nn.Module):
 
         This function trains the model with the specified hyperparameters
         """
+        # we create a dataset and a dataloader for the training
         dataset = TensorDataset(self.X_train.view(-1, self.window_size * self.X_train.size(2)), self.y_train)
         dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
+        # we create a list to store the training losses
         train_losses = []
 
         for epoch in range(epochs):
             for X_batch, y_batch in dataloader:
+                # we set the gradients to zero
                 self.optimizer.zero_grad()
+                # the predictions are made
                 predictions = self(X_batch)
+                # and the loss is computed
                 loss = self.criterion(predictions, y_batch)
+                # the gradients are computed
                 loss.backward()
+                # and the gradients are clipped
                 torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=max_grad_norm)
-
+                # the optimizer takes a step
                 self.optimizer.step()
-
+                # we append the loss to the list
                 train_losses.append(loss.item())
 
 
@@ -154,12 +165,14 @@ class Ann(nn.Module):
         This function evaluates the model with the test data
         """
         with torch.no_grad():
+            # we make the predictions
             predictions = self(self.X_test.view(-1, self.window_size * self.X_test.size(2)))
 
-
+            # and compute the rmse
             test_loss = self.criterion(predictions, self.y_test)
             rmse = torch.sqrt(test_loss)
-
+        
+        # return the rmse calculated
         return rmse.item()
 
     
@@ -171,12 +184,16 @@ class Ann(nn.Module):
 
         This function predicts the next 3 days of the input dataframe
         """
+        # as we receive a dataframe with the 7 days containing the target variable, we drop it
         X = df.drop(self.target_variable, axis=1).iloc[-self.window_size:].values
+        # and convert it into a tensor
         X = torch.tensor(X, dtype=torch.float32).reshape(1, -1, self.window_size * self.X_train.size(2))
         with torch.no_grad():
+            # a prediction is made
             predictions = self(X)
        
-
+        # return the 3 days predicted (predictions is an array of arrays, so we select the first one; it is how
+        # the model is implemented in PyTorch)
         return predictions[0].numpy()
 
 
@@ -257,3 +274,4 @@ class Ann(nn.Module):
             feature_importance.append((feature_name, importance_value.item()))
 
         return feature_importance
+        

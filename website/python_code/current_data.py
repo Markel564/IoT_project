@@ -11,10 +11,13 @@ from kaggle.api.kaggle_api_extended import KaggleApi
 import shutil
 import os
 import pandas as pd
-from sklearn.preprocessing import StandardScaler
 from scipy.stats import zscore
 import warnings
 warnings.filterwarnings('ignore')
+from scipy.stats import zscore
+from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import StandardScaler
+
 
 def get_data(city, target_variable):
 
@@ -67,7 +70,6 @@ def create_data():
 
     # download the dataset
     api.dataset_download_files(dataset_name, path=output_dir, unzip=True)
-
 
 
 def adjust_dataset(df,target_variable):
@@ -157,5 +159,4 @@ def adjust_dataset(df,target_variable):
 
 
 
-if __name__ == "__main__":
-    df = get_data("Madrid", "temperature_celsius")
+

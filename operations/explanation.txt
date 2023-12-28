@@ -1,0 +1,13 @@
+This is a module containing the operations used for machine learning algorithms.
+"""
+
+It contains 4 files:
+
+- __init__.py : the file that tells Python that this is a module.
+
+- adjust_dataset.py : a file containing the functions used to adjust the dataset (preprocessing).
+
+- ann.py: a file containing the class implemented for the ANN algorithm.
+
+- lstm.py: a file containing the class implemented for the LSTM algorithm.
+

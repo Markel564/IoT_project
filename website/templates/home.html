@@ -55,6 +55,16 @@
     <button type="submit" class="btn go-button btn-success" id="go-button">GO!</button>
 </form>
 
+
+<div id="overlay" style="display: none;">
+  <div class="overlay-content">
+      <h2>Loading...</h2>
+      <p>The loading of models might take some time</p>
+  </div>
+</div>
+
+
+
 <script>
   function toggleDropdown() {
     document.getElementById("dropdownOptions").classList.toggle("show");
@@ -73,6 +83,11 @@
                 // Update the selectedAlgorithm value when a radio button is selected
                 document.getElementById("selectedAlgorithm").value = this.value;
             });
+        });
+
+        document.getElementById("go-button").addEventListener("click", function () {
+            // Display the overlay when go botton is clicked
+            document.getElementById("overlay").style.display = "block";
         });
     });
 

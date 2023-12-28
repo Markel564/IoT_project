@@ -2,7 +2,6 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from .python_code.city import get_city_and_country
 from .python_code.time import get_date, get_hour, get_dates
 from .python_code.current_data import get_data, create_data
-from .python_code.adjust_dataset import adjust_dataset
 import pandas as pd
 from .python_code.get_models_and_paths import get_models, get_paths
 from .python_code.condition import condition
@@ -73,6 +72,8 @@ def page():
             # and we get the last 7 days's dataset for each target variable
             datasets.append(get_data(city, target_variable))
 
+        for dataset in datasets:
+            print (dataset.shape)   
     
         # we get the paths
         paths = get_paths(target_variables, algorithm)
@@ -83,7 +84,6 @@ def page():
         models = get_models(target_variables, algorithm, paths)
         print ("Models created")
         
-
 
         # lets print the predictions
         predictions = []

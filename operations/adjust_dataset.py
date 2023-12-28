@@ -16,10 +16,11 @@ def adjust_dataset(df,target_variable):
 
     return: adjusted dataframe
     """
-    
-    # 1. Order by location_name
+
+    # 1. Order by location_name and last_updated
     df.sort_values(by=['location_name', 'last_updated'], inplace=True)
-    # 2. Order by last_updated and eliminate it since we dont need them
+
+    # 2. Eliminate last updated column since it is not useful no more
     df.drop(columns=['last_updated'], inplace=True)
 
     # 3. Columns that are not useful for the prediction
@@ -31,6 +32,7 @@ def adjust_dataset(df,target_variable):
     df.drop(columns=constant_cols, inplace=True)
 
 
+    # apply label encoding to the categorical columns
     df.drop(columns=['condition_text'], inplace=True)
 
 
@@ -48,12 +50,13 @@ def adjust_dataset(df,target_variable):
     df.drop(columns=categorical_variables, inplace=True)
 
 
+
     # 5. There are instantes with moonset and moonrise where there are missing values, because there is none. We 
     # will delete those rows
-    df['moonset'] = df['moonset'].replace('No moonset', pd.NaT).fillna(method='bfill')
-    df['moonrise'] = df['moonrise'].replace('No moonrise', pd.NaT).fillna(method='bfill')
-    
-
+    df['moonset'] = df['moonset'].replace('No moonset', pd.NaT).fillna(method='ffill')
+    df['moonrise'] = df['moonrise'].replace('No moonrise', pd.NaT).fillna(method='ffill')
+    # now we drop these rows
+    df.dropna(inplace=True)
 
     # # 6 Change format of object columns to timestamp
     df['sunrise'] = pd.to_datetime(df['sunrise']).apply(lambda x: x.timestamp() if not pd.isna(x) else x)
@@ -65,7 +68,6 @@ def adjust_dataset(df,target_variable):
     scaler = StandardScaler()
     numerical_columns = df.select_dtypes(include=['int', 'float']).columns
     numerical_columns = numerical_columns.drop(target_variable)
-
     # numerical_columns = numerical_columns.drop(['sunrise', 'sunset', 'moonrise', 'moonset'])
     scaler.fit(df[numerical_columns])
     df[numerical_columns] = scaler.transform(df[numerical_columns])
@@ -84,6 +86,8 @@ def adjust_dataset(df,target_variable):
     outliers = (abs_z_scores > 3).all(axis=1)
     df_no_outliers = df[~outliers]
 
-  
-    return df_no_outliers
 
+        
+    
+    
+    return df_no_outliers

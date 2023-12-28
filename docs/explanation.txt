@@ -1,0 +1,32 @@
+This folder contains the following files:
+
+1. kaggle.json: 
+
+The Kaggle API token used to download the dataset. The email used for this is iot2023SU@gmail.com
+
+For installing it, use 
+
+pip install kaggle
+mkdir ~/.kaggle
+cp kaggle.json ~/.kaggle/
+chmod 600 ~/.kaggle/kaggle.json
+
+
+2. data 
+
+This folder contains all the data used for the project. The data is downloaded from Kaggle using the Kaggle API.
+
+It contains the repository used for training the model and a zip file with it. It can be updated running the realtimedata.py file.
+
+It also contains 5 folders with the dataset prepared for each target variable, as each dataset is different slightly depending on the target variable;
+for instance, when predicting humidity, temperature will be normalized, but when predicting temperature, it will not be normalized.
+
+We did this so that when running the app, no time is spent normalizing data and so on.
+
+
+3. eval_results
+
+This file contains the results of each model trained, depending on the day trained (as each day our dataset got bigger and we could use more data for training).
+
+It gives the rmse of each target variable for the given model and date 
+

@@ -1,0 +1,11 @@
+This folder contains the models for each target variable and machine learning algorithm
+
+There are 10 files; 5 for LSTM and 5 for ANN
+
+For each algorithm, we have a model saved for each target variable, which are
+
+-- temperature_celsius
+-- humidity
+-- precip_mm (precipitation)
+-- wind_kph (wind speed)
+-- cloud (cloud cover %)

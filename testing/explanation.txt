@@ -1,0 +1,4 @@
+This folder contains the files used for doing simple testing, which means
+basically running each algorithm on a single instance and checking that the
+output is correct. The files are named after the algorithm they test
+

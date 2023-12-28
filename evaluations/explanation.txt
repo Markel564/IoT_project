@@ -1,0 +1,13 @@
+This folder contains 2 files:
+
+1. Evaluation_ann
+
+This file creates an ann model using the data from the dataset and evaluates the model. It creates a file in docs/eval_results
+
+It also creates a model in models/, yet the line is commented as we have created a cut date which is the 23rd of december 2019,
+so that the data predicted is not used for the training of the model.
+
+
+2. Evaluation_lstm
+
+The same as the previous file, but it creates a lstm model instead of an ann model.
