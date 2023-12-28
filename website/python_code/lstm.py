@@ -1,7 +1,7 @@
 """
 -- This file contains the implementation of the LSTM model --
 
-A detail description of each function is provided in the docstring of each function.
+For more description of the model, please check the files at operations/lstm
 """
 import torch
 import torch.nn as nn

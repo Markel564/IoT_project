@@ -21,12 +21,12 @@ def get_date():
     :return: date in string format
     """
     
-    date = datetime.datetime.now()
-    day = date.strftime("%A")
-    month = date.strftime("%B")
-    day_of_month = date.strftime("%d")
-    year = date.strftime("%Y")
-    return day + ", " + month + " " + day_of_month + ", " + year
+    date = datetime.datetime.now() # get the current date
+    day = date.strftime("%A") # get the day of the week
+    month = date.strftime("%B") # get the name of the month
+    day_of_month = date.strftime("%d") # get the day of the month
+    year = date.strftime("%Y") # get the year
+    return day + ", " + month + " " + day_of_month + ", " + year # return the date in the format specified above
 
 
 def get_hour():
@@ -36,7 +36,7 @@ def get_hour():
     hh:mm
     :return: hour in string format
     """
-
+    
     date = datetime.datetime.now()
     hour = date.strftime("%H")
     minute = date.strftime("%M")

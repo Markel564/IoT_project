@@ -1,7 +1,7 @@
 """
 -- This file contains the implementation of the ANN model --
 
-A detail description of each function is provided in the docstring of each function.
+For more description of the model, please check the files at operations/ann
 """
 import pandas as pd
 import numpy as np

@@ -1,5 +1,9 @@
 """
-This file has the functions related to the condition of the weather
+This file contains a function that returns
+the condition of the weather based on the input.
+
+It is arbirtrary and it is not based on any scientific
+evidence, it is just a way to show the user the weather condition
 
 """
 

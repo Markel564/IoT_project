@@ -4,6 +4,8 @@ means, 7 last days of the data.
 
 It also prepares the data for the model, scaling it similar to 
 what was done in the training phase.
+
+For more information about adjust_dataset, check out operations/adjust_dataset.py
 """
 
 
@@ -156,7 +158,3 @@ def adjust_dataset(df,target_variable):
     
     
     return df_no_outliers
-
-
-
-

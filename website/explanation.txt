@@ -1,0 +1,19 @@
+This file contains the implementation of the website
+
+We are using Flask as the web framework
+
+The views.py file contains the routes for the website. This views are passed to the __init__.py file which 
+creates the app and returns it. The file called main.py, outside this folder, is the one that runs the app.
+
+The templates folder contains the html files for the website. The static folder contains the css and js files,
+as well as the images used in the website. 
+
+For html, we have used Jinja2 as the template engine. This allows us to pass variables from the python code to the html
+and reuse html code. For example, the base.html file contains the html code that is common to all the pages
+
+We have also used bootstrap for the css and js files. This allows us to use the bootstrap classes to style the website
+properly.
+
+python_code file contains the python code for the functions called in views.py; obtaining the models for prediction,
+information such as dates, etc.
+

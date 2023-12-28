@@ -57,8 +57,8 @@ def page():
         # we get the date and time
         date = get_date()
         time = get_hour()
-
         
+            
         # we get the data for the selected city
         target_variables = ['temperature_celsius', 'humidity', 'precip_mm', 'cloud', 'wind_kph']
 
