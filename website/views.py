@@ -6,6 +6,7 @@ import pandas as pd
 from .python_code.get_models_and_paths import get_models, get_paths
 from .python_code.condition import condition
 from .python_code.pack_info import pack_info
+from .python_code.models_info import rmse_info
 
 views = Blueprint('views', __name__)
 
@@ -13,7 +14,6 @@ views = Blueprint('views', __name__)
 target_variables = ['temperature_celsius', 'humidity', 'precip_mm', 'cloud', 'wind_kph']
 
 
-# models = get_models(target_variables, paths)
 
 
 @views.route('/', methods=['GET', 'POST'])
@@ -32,7 +32,10 @@ def home():
         return redirect(url_for('views.page', city=selected_city, algorithm=selectedAlgorithm))
 
     else:
-        return render_template('home.html')
+        info_ANN = rmse_info("ANN")
+        info_LSTM = rmse_info("LSTM")
+        print (info_ANN)
+        return render_template('home.html', info_ANN = info_ANN, info_LSTM = info_LSTM)
 
 
 

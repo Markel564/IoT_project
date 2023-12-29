@@ -19,7 +19,8 @@
           organized in layers
           <br>
           <a href="https://www.ibm.com/topics/neural-networks">More info</a>
-      </div>
+        </div>
+        
         <div class="form-check">
             <input class="form-check-input" type="radio" name="selectedAlgorithm" id="algorithm2" value="LSTM">
             <label class="form-check-label" for="algorithm2">
@@ -30,7 +31,8 @@
         <div id="LSTM_info" class="info-text" style="display: none;">
           LSTM is a type of recurrent neural network (RNN) designed to overcome the vanishing gradient problem
           <a href="https://www.analyticsvidhya.com/blog/2021/03/introduction-to-long-short-term-memory-lstm/">More info</a>
-      </div>
+        </div>
+    
     </div>
 </div>
 
@@ -59,7 +61,18 @@
 <div id="overlay" style="display: none;">
   <div class="overlay-content">
       <h2>Loading...</h2>
-      <p>The loading of models might take some time</p>
+      <p>Model loading might take some time</p>
+      <div id = "rmse" class="info-rmse">
+        <!-- we get the value of the algorithm selected-->
+        <div>
+          <p>RMSE for ANN</p>
+          <p>{{info_ANN}}</p>
+        </div>
+        <div>
+          <p>RMSE for LSTM</p>
+          <p>{{info_LSTM}}</p>
+        </div>
+      </div>
   </div>
 </div>
 
@@ -114,6 +127,7 @@
             infoElement.style.display = "none";
         }
     }
+
 </script>
 
 

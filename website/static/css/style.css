@@ -79,7 +79,8 @@ form {
   color: white;
   font-size: 15px;
   font-family: 'Montserrat', sans-serif; 
-  width: 25%;
+  width: 30%;
+
 }
 
 .algorithms {
@@ -192,7 +193,7 @@ form {
   display: flex;
   flex-wrap: wrap;
   margin-bottom: 10px; 
-  margin-left: 100px;
+  margin-left: 150px;
 }
 
 /* Style for the checkbox input */
@@ -306,6 +307,7 @@ form {
 
 #LSTM-info, #ANN-info{
   width: 100%;
+  align-items: center;
 }
 
 
@@ -336,4 +338,21 @@ form {
 
 .overlay-content p {
   color: #666; /* Text color */
+}
+
+
+.info-rmse {
+  border: 1px solid white;
+  white-space: pre-line;
+  width: 100%;
+  max-height: 180px;
+  padding: 10px;  /* Adjust padding for spacing */
+  display: flex;
+  align-items: center;
+  justify-content: space-around; /* Adjust as needed for spacing between items */
+}
+
+.rmse-item {
+  flex: 1; /* Distribute available space equally among the items */
+  text-align: center; /* Center text within each item */
 }
