@@ -6,8 +6,8 @@ This file returns the city + the country of the city
 
 def get_city_and_country(city):
     
-    if city == "Paris":
-        return "Paris, France".upper()
+    if city == "Buenos Aires":
+        return "Buenos Aires, Argentina".upper()
     elif city == "Madrid":
         return "Madrid, Spain".upper()
     elif city == "Windhoek":

@@ -76,8 +76,12 @@ def page():
         if not algorithm:
             algorithm = "ANN"
         # we get the date and time
-        date = get_date()
-        time = get_hour()
+        result = get_hour(city)
+        print (result)
+        time = result[1]
+
+        date = get_date(result[0])
+        
         
             
         # we get the data for the selected city
@@ -134,7 +138,7 @@ def page():
 
 
         # we also will send the dates (monday, tuesday, ...) to the page
-        dates = get_dates()
+        dates = get_dates(result[0])
         
         
         # and render the page with the information obtained (city, algorithm, date, time, info, dates) 
